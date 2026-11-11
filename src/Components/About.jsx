@@ -69,26 +69,26 @@ const About = ({ darkMode }) => {
             data-aos="fade-up"
             data-aos-delay="500"
           >
-            <p>
-              I’m a <span className="text-orange-500 font-semibold text-lg italic">Full-Stack Web Developer</span> with a strong passion for building
-              scalable, real-world web solutions. I started my journey in web
-              development early during my first year of high school, which gave me
-              a solid technical foundation and a long-term vision in the field.
+            <p className="font-bold text-xl sm:text-2xl text-orange-500">
+              Beyond Numbers. Beyond Creativity.
             </p>
             <p>
-              By my second year, I was already working as a <span className="text-orange-500 font-semibold italic text-lg">Trainer</span>, helping others
-              learn web development—an experience that sharpened both my technical
-              depth and my ability to break down complex concepts clearly.
+              I'm <span className="text-orange-500 font-semibold italic">Shahd Kamal</span>, a results-oriented professional passionate about the intersection of business, data, and digital growth innovation.
+            </p>
+            <p>I bring together two powerful disciplines that shape the way businesses grow and make decisions:</p>
+            <p>
+              <span className="text-orange-500 font-semibold">Data Analysis:</span> Turning complex datasets into meaningful insights, uncovering hidden patterns, and translating numbers into strategic decisions. I focus on making data understandable, actionable, and valuable through analytical thinking and data visualization.
             </p>
             <p>
-              Today, as a university student, I focus on turning ideas into functional,
-              user-centered products. I’m currently open to freelance opportunities and collaborations where I
-              can contribute, grow, and build meaningful digital experiences.
+              <span className="text-orange-500 font-semibold">Digital Marketing:</span> Combining creativity with strategic thinking to build engaging digital experiences, strengthen brand presence, understand audience behavior, and create content that connects brands with people.
+            </p>
+            <p className="italic">
+              I believe that successful businesses need more than data and more than creativity — they need the ability to connect both. My approach is simple: <span className="font-semibold">Analyze with purpose, create with strategy, and deliver with impact.</span>
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-8">
-            {/* Years Education */}
+            {/* 2 Disciplines */}
             <div
               className={`p-4 rounded-2xl transition-all duration-300 hover:-translate-y-2
               ${darkMode ? "bg-white/5 border border-white/10" : "bg-orange-50 border border-orange-100 shadow-md"}`}
@@ -99,13 +99,13 @@ const About = ({ darkMode }) => {
                 <GraduationCap size={24} />
               </div>
               <div className="text-xl sm:text-2xl font-bold text-orange-500">
-                3+
+                2
               </div>
               <div
                 className={`text-[10px] sm:text-xs font-medium uppercase tracking-tighter
                 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
               >
-                Years Education
+                Disciplines
               </div>
             </div>
 
@@ -126,11 +126,11 @@ const About = ({ darkMode }) => {
                 className={`text-[10px] sm:text-xs font-medium uppercase tracking-tighter
                 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
               >
-                Experience
+                Year Experience
               </div>
             </div>
 
-            {/* Projects completed */}
+            {/* CFA Stage */}
             <div
               className={`p-4 rounded-2xl transition-all duration-300 hover:-translate-y-2
                 ${darkMode ? "bg-white/5 border border-white/10" : "bg-orange-50 border border-orange-100 shadow-md"}`}
@@ -141,13 +141,13 @@ const About = ({ darkMode }) => {
                 <Layout size={24} />
               </div>
               <div className="text-xl sm:text-2xl font-bold text-orange-500">
-                7+
+                CFA
               </div>
               <div
                 className={`text-[10px] sm:text-xs font-medium uppercase tracking-tighter
                 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
               >
-                Projects
+                Stage 2
               </div>
             </div>
           </div>

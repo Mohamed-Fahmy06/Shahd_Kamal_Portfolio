@@ -87,14 +87,21 @@ const Hero = ({ darkMode }) => {
               data-aos="fade-up"
               data-aos-delay="500"
             >
-              Hi, I'm Mohamed Fahmy
+              Hi, I'm Shahd Kamal
             </h1>
             <p
               className={`mb-6 sm:mb-8 leading-relaxed max-w-md sm:max-w-lg text-lg sm:text-xl font-bold ${theme.textSecondary}`}
               data-aos="fade-up"
               data-aos-delay="600"
             >
-              I'm a passionate developer creating amazing web experiences.
+              Data Analyst & Digital Marketing Specialist.
+            </p>
+            <p
+              className={`mb-6 sm:mb-8 leading-relaxed max-w-md sm:max-w-lg text-md sm:text-lg font-semibold ${theme.textSecondary}`}
+              data-aos="fade-up"
+              data-aos-delay="600"
+            >
+              Turning Data into Insights, and Creativity into Digital Growth.
             </p>
             {/* buttons */}
             <div className="w-full pt-4 sm:pt-6">
