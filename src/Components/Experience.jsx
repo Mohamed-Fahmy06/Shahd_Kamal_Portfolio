@@ -37,7 +37,7 @@ const Experience = ({ darkMode }) => {
     <section
       id="Experience"
       style={{ backgroundColor: darkMode ? "#111827" : "#f9fafb" }}
-      className="py-24 overflow-hidden relative cursor-default caret-transparent"
+      className="py-24 overflow-hidden relative cursor-default caret-transparent transition-colors duration-500"
     >
       <div className="container mx-auto px-4 sm:px-8 lg:px-14">
         <div className="text-center mb-16" data-aos="fade-up">
@@ -71,7 +71,7 @@ const Experience = ({ darkMode }) => {
               key={index}
               data-aos="fade-up"
               data-aos-delay={index * 150}
-              className="rounded-2xl border overflow-hidden transition-all duration-300 hover:border-orange-500/50"
+              className="rounded-2xl border overflow-hidden transition-all duration-500 hover:border-orange-500/50 hover:shadow-xl"
               style={{
                 background: darkMode
                   ? "linear-gradient(to bottom right, #1f2937, #111827)"

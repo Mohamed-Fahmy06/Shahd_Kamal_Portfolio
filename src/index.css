@@ -8,16 +8,56 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-body{
-    font-family: 'Readex Pro', sans-serif;
+html {
+  scroll-behavior: smooth;
 }
 
-.dark{
-    color-scheme: dark;
+body {
+  font-family: 'Readex Pro', sans-serif;
+  overflow-x: hidden;
 }
 
-html{
-    scroll-behavior: smooth;
+.dark {
+  color-scheme: dark;
+}
+
+/* Smooth theme transition for color, background, borders, and shadows */
+html,
+body,
+div,
+section,
+article,
+figure,
+header,
+footer,
+nav,
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+a,
+input,
+textarea {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 450ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Offset for fixed navbar so section titles aren't hidden */
+section[id],
+div[id="Home"],
+#Home,
+#About,
+#Experience,
+#Skills,
+#Projects,
+#Contact {
+  scroll-margin-top: 5.5rem;
 }
 
 .star-shape{

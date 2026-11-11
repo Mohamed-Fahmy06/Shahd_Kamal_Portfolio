@@ -124,10 +124,15 @@ const Hero = ({ darkMode }) => {
                   Download CV
                 </a>
                 <a
-                  href="https://wa.me/201103149905"
+                  href="#Contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('Contact')?.scrollIntoView({ behavior: 'smooth' });
+                    window.history.pushState(null, '', '#Contact');
+                  }}
                   className={`w-full sm:w-auto inline-flex items-center ${theme.buttonSecondary} justify-center
                                       border-0 py-3 px-6 sm:px-8 hover:shadow-[0_0_40px_rgb(255,165,0,0.6)]
-                                      rounded-full text-base sm:text-lg font-semibold transition-all duration-200 transform
+                                      rounded-full text-base sm:text-lg font-semibold transition-all duration-200 transform cursor-pointer
                                       ${
                                         darkMode
                                           ? "text-white"

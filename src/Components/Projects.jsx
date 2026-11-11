@@ -83,7 +83,7 @@ const Projects = ({ darkMode }) => {
     <section
       id="Projects"
       style={{ backgroundColor: darkMode ? "#111827" : "#f9fafb" }}
-      className="relative py-24 cursor-default caret-transparent"
+      className="relative py-24 cursor-default caret-transparent transition-colors duration-500"
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16" data-aos="fade-up">

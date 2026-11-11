@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 
 
@@ -17,7 +17,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
   ];
 
   const lightColors = {
-    navBg: 'bg-linear-to-br from-orange-200 to-white',
+    navBg: 'bg-linear-to-br from-orange-200/90 to-white/95',
     textPrimary: 'text-gray-900',
     textSecondary: 'text-gray-600',
     textHover: 'text-orange-500',
@@ -27,7 +27,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
   };
 
   const darkColors = {
-    navBg: 'bg-linear-to-br from-gray-500 to-black',
+    navBg: 'bg-linear-to-br from-gray-800/90 to-gray-950/95',
     textPrimary: 'text-white',
     textSecondary: 'text-gray-300',
     textHover: 'text-orange-400',
@@ -38,10 +38,37 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
 
   const colors = darkMode ? darkColors : lightColors;
 
-  const handleNavItemClick = (itemName) => {
+  const handleNavItemClick = (e, targetHref, itemName) => {
+    if (e) e.preventDefault();
     setActiveSection(itemName.toLowerCase());
     setIsMenuOpen(false);
+
+    const targetId = targetHref.replace('#', '');
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.pushState(null, '', targetHref);
+    }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 220;
+      for (let i = navItems.length - 1; i >= 0; i--) {
+        const item = navItems[i];
+        const targetId = item.link.replace('#', '');
+        const element = document.getElementById(targetId);
+        if (element && element.offsetTop <= scrollPosition) {
+          setActiveSection(item.name.toLowerCase());
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className=" flex justify-center w-full fixed z-50">
@@ -71,8 +98,8 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
               <a
                 key={item.name}
                 href={item.link}
-                className={`relative text-sm font-medium ${colors.textPrimary} hover:${colors.textHover} ${activeSection === item.name.toLowerCase() ? `${colors.textActive}` : ""}`}
-                onClick={() => handleNavItemClick(item.name)}
+                className={`relative text-sm font-medium py-1 ${colors.textPrimary} hover:${colors.textHover} ${activeSection === item.name.toLowerCase() ? `${colors.textActive}` : ""}`}
+                onClick={(e) => handleNavItemClick(e, item.link, item.name)}
               >
                 <motion.span
                   className={`font-bold transition-colors duration-300
@@ -89,10 +116,8 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                 {activeSection === item.name.toLowerCase() && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className={`absolute bottom-1 left-0 right-0 h-0.5 bg-linear-to-r rounded-full ${colors.indicator}`}
-                    initial={{ width: 0 }}
-                    animate={{ width: '100%' }}
-                    transition={{ duration: 0.3 }}
+                    className={`absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r rounded-full ${colors.indicator}`}
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
                   />
                 )}
               </a>
@@ -100,33 +125,42 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
           </div>
 
           <div className="flex items-center space-x-2">
-            {/* dark mode toggle */}
+            {/* dark mode toggle with smooth rotation & scale */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleDarkMode}
-              className={`p-2 rounded-full ${
+              className={`p-2.5 rounded-full ${
                 darkMode
-                  ? "bg-gray-600 text-white"
-                  : "bg-gray-300 text-gray-900"
-              } transition-colors`}
+                  ? "bg-gray-800/90 text-yellow-300 border border-gray-700 hover:border-yellow-400/50"
+                  : "bg-white/90 text-gray-800 border border-orange-200 hover:border-orange-400/50"
+              } shadow-md transition-colors duration-400 cursor-pointer overflow-hidden flex items-center justify-center`}
               aria-label={
                 darkMode ? "Switch to light mode" : "Switch to dark mode"
               }
             >
-              {darkMode ? (
-                <Sun className="w-5 h-5 text-yellow-300" />
-              ) : (
-                <Moon className="w-5 h-5 text-gray-700" />
-              )}
+              <motion.div
+                key={darkMode ? "dark" : "light"}
+                initial={{ rotate: -90, scale: 0.4, opacity: 0 }}
+                animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                exit={{ rotate: 90, scale: 0.4, opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              >
+                {darkMode ? (
+                  <Sun className="w-5 h-5 text-yellow-300" />
+                ) : (
+                  <Moon className="w-5 h-5 text-gray-700" />
+                )}
+              </motion.div>
             </motion.button>
 
             {/* button */}
             <motion.a
               href="#Contact"
+              onClick={(e) => handleNavItemClick(e, '#Contact', 'Contact')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`hidden lg:block px-6 py-2 font-semibold ${colors.button} rounded-full bg-linear-to-r text-white shadow-lg hover:shadow-xl transition-shadow`}
+              className={`hidden lg:block px-6 py-2 font-semibold ${colors.button} rounded-full bg-linear-to-r text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer`}
             >
               Hire me
             </motion.a>
@@ -172,8 +206,8 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                   key={item.name}
                   href={item.link}
                   className={`block`}
-                  onClick={() => {
-                    handleNavItemClick(item.name);
+                  onClick={(e) => {
+                    handleNavItemClick(e, item.link, item.name);
                   }}
                 >
                   <motion.div
@@ -196,10 +230,10 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
 
               <motion.a
                 href="#Contact"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleNavItemClick(e, '#Contact', 'Contact')}
                 whileTap={{ scale: 0.95 }}
                 className={`block px-4 py-3 font-semibold ${colors.button}
-                rounded-lg bg-linear-to-r text-center text-white shadow-md
+                rounded-lg bg-linear-to-r text-center text-white shadow-md cursor-pointer
                 `}
               >
                 Hire me

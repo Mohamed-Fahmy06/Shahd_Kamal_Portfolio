@@ -37,7 +37,7 @@ const Contact = ({ darkMode }) => {
       style={{
         backgroundColor: darkMode ? "#111827" : "#f9fafb",
       }}
-      className="py-14 sm:py-16 md:py-20 lg:py-24 overflow-hidden cursor-default caret-transparent"
+      className="py-14 sm:py-16 md:py-20 lg:py-24 overflow-hidden cursor-default caret-transparent transition-colors duration-500"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-10 lg:mb-8 " data-aos="fade-up">

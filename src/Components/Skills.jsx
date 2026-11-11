@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { BarChart2, Megaphone, Briefcase } from "lucide-react";
 
 const Skills = ({ darkMode }) => {
@@ -54,8 +55,10 @@ const Skills = ({ darkMode }) => {
   ];
 
   const SkillTag = ({ label }) => (
-    <span
-      className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors"
+    <motion.span
+      whileHover={{ scale: 1.05, y: -2 }}
+      transition={{ duration: 0.15 }}
+      className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors inline-block cursor-default"
       style={{
         backgroundColor: darkMode ? "rgba(249, 115, 22, 0.1)" : "#fff7ed",
         color: "#f97316",
@@ -63,12 +66,14 @@ const Skills = ({ darkMode }) => {
       }}
     >
       {label}
-    </span>
+    </motion.span>
   );
 
   const ToolBadge = ({ label }) => (
-    <div
-      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border"
+    <motion.div
+      whileHover={{ scale: 1.02, x: 5 }}
+      transition={{ duration: 0.15 }}
+      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300 cursor-default"
       style={{
         background: darkMode
           ? "linear-gradient(to bottom right, #1f2937, #111827)"
@@ -82,14 +87,14 @@ const Skills = ({ darkMode }) => {
         style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
       />
       {label}
-    </div>
+    </motion.div>
   );
 
   return (
     <section
       id="Skills"
       style={{ backgroundColor: darkMode ? "#111827" : "#f9fafb" }}
-      className="py-24 overflow-hidden relative cursor-default caret-transparent"
+      className="py-24 overflow-hidden relative cursor-default caret-transparent transition-colors duration-500"
     >
       <div className="container px-4 sm:px-8 lg:px-14 mx-auto">
         {/* Section Header */}
@@ -118,142 +123,160 @@ const Skills = ({ darkMode }) => {
           </p>
         </div>
 
-        {/* Tab Switcher */}
+        {/* Tab Switcher with sliding indicator */}
         <div className="flex justify-center mb-10" data-aos="fade-up" data-aos-delay="100">
           <div
-            className="flex rounded-2xl p-1 gap-1"
+            className="flex rounded-2xl p-1.5 gap-2 backdrop-blur-md transition-colors duration-400"
             style={{
-              background: darkMode ? "#1f2937" : "#e5e7eb",
+              background: darkMode ? "rgba(31, 41, 55, 0.85)" : "rgba(229, 231, 235, 0.85)",
+              border: darkMode ? "1px solid rgba(75, 85, 99, 0.5)" : "1px solid rgba(209, 213, 219, 0.8)",
             }}
           >
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300"
-                style={
-                  activeTab === tab.id
-                    ? {
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="relative flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-colors duration-300 cursor-pointer"
+                  style={{
+                    color: isActive ? "#ffffff" : darkMode ? "#9ca3af" : "#4b5563",
+                  }}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeSkillTabIndicator"
+                      className="absolute inset-0 rounded-xl"
+                      style={{
                         background: "linear-gradient(to right, #f97316, #f59e0b)",
-                        color: "white",
-                        boxShadow: "0 4px 15px rgba(249, 115, 22, 0.35)",
-                      }
-                    : {
-                        color: darkMode ? "#9ca3af" : "#6b7280",
-                        background: "transparent",
-                      }
-                }
-              >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
+                        boxShadow: "0 4px 20px rgba(249, 115, 22, 0.4)",
+                      }}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-2">
+                    {tab.icon}
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Tab Content */}
-        <div data-aos="fade-up" data-aos-delay="200">
-          {activeTab === "data" && (
-            <div
-              className="rounded-2xl border p-6 sm:p-8 max-w-4xl mx-auto"
-              style={{
-                background: darkMode
-                  ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                  : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-                borderColor: darkMode ? "#374151" : "#e5e7eb",
-              }}
-            >
-              <div
-                className="h-1 w-20 rounded-full mb-6"
-                style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
-              />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Skills */}
-                <div>
-                  <h3
-                    className="text-lg font-bold mb-4 flex items-center gap-2"
-                    style={{ color: darkMode ? "white" : "#1f2937" }}
-                  >
-                    <BarChart2 size={20} className="text-orange-500" />
-                    Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {dataAnalysisSkills.map((s, i) => (
-                      <SkillTag key={i} label={s} />
-                    ))}
+        {/* Tab Content with smooth slide transitions */}
+        <div className="relative overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+          <AnimatePresence mode="wait">
+            {activeTab === "data" ? (
+              <motion.div
+                key="data"
+                initial={{ opacity: 0, x: -35, filter: "blur(4px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: 35, filter: "blur(4px)" }}
+                transition={{ duration: 0.35, ease: [0.25, 1, 0.5, 1] }}
+                className="rounded-2xl border p-6 sm:p-8 max-w-4xl mx-auto transition-colors duration-500 shadow-xl"
+                style={{
+                  background: darkMode
+                    ? "linear-gradient(to bottom right, #1f2937, #111827)"
+                    : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
+                  borderColor: darkMode ? "#374151" : "#e5e7eb",
+                }}
+              >
+                <div
+                  className="h-1 w-20 rounded-full mb-6"
+                  style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
+                />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Skills */}
+                  <div>
+                    <h3
+                      className="text-lg font-bold mb-4 flex items-center gap-2"
+                      style={{ color: darkMode ? "white" : "#1f2937" }}
+                    >
+                      <BarChart2 size={20} className="text-orange-500" />
+                      Skills
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {dataAnalysisSkills.map((s, i) => (
+                        <SkillTag key={i} label={s} />
+                      ))}
+                    </div>
+                  </div>
+                  {/* Tools */}
+                  <div>
+                    <h3
+                      className="text-lg font-bold mb-4"
+                      style={{ color: darkMode ? "white" : "#1f2937" }}
+                    >
+                      🛠 Tools
+                    </h3>
+                    <div className="flex flex-col gap-2">
+                      {dataAnalysisTools.map((t, i) => (
+                        <ToolBadge key={i} label={t} />
+                      ))}
+                    </div>
                   </div>
                 </div>
-                {/* Tools */}
-                <div>
-                  <h3
-                    className="text-lg font-bold mb-4"
-                    style={{ color: darkMode ? "white" : "#1f2937" }}
-                  >
-                    🛠 Tools
-                  </h3>
-                  <div className="flex flex-col gap-2">
-                    {dataAnalysisTools.map((t, i) => (
-                      <ToolBadge key={i} label={t} />
-                    ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="marketing"
+                initial={{ opacity: 0, x: 35, filter: "blur(4px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: -35, filter: "blur(4px)" }}
+                transition={{ duration: 0.35, ease: [0.25, 1, 0.5, 1] }}
+                className="rounded-2xl border p-6 sm:p-8 max-w-4xl mx-auto transition-colors duration-500 shadow-xl"
+                style={{
+                  background: darkMode
+                    ? "linear-gradient(to bottom right, #1f2937, #111827)"
+                    : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
+                  borderColor: darkMode ? "#374151" : "#e5e7eb",
+                }}
+              >
+                <div
+                  className="h-1 w-20 rounded-full mb-6"
+                  style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
+                />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Skills */}
+                  <div>
+                    <h3
+                      className="text-lg font-bold mb-4 flex items-center gap-2"
+                      style={{ color: darkMode ? "white" : "#1f2937" }}
+                    >
+                      <Megaphone size={20} className="text-orange-500" />
+                      Skills
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {digitalMarketingSkills.map((s, i) => (
+                        <SkillTag key={i} label={s} />
+                      ))}
+                    </div>
+                  </div>
+                  {/* Tools */}
+                  <div>
+                    <h3
+                      className="text-lg font-bold mb-4"
+                      style={{ color: darkMode ? "white" : "#1f2937" }}
+                    >
+                      🛠 Tools
+                    </h3>
+                    <div className="flex flex-col gap-2">
+                      {[...digitalMarketingTools, ...productivityTools].map((t, i) => (
+                        <ToolBadge key={i} label={t} />
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "marketing" && (
-            <div
-              className="rounded-2xl border p-6 sm:p-8 max-w-4xl mx-auto"
-              style={{
-                background: darkMode
-                  ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                  : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-                borderColor: darkMode ? "#374151" : "#e5e7eb",
-              }}
-            >
-              <div
-                className="h-1 w-20 rounded-full mb-6"
-                style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
-              />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Skills */}
-                <div>
-                  <h3
-                    className="text-lg font-bold mb-4 flex items-center gap-2"
-                    style={{ color: darkMode ? "white" : "#1f2937" }}
-                  >
-                    <Megaphone size={20} className="text-orange-500" />
-                    Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {digitalMarketingSkills.map((s, i) => (
-                      <SkillTag key={i} label={s} />
-                    ))}
-                  </div>
-                </div>
-                {/* Tools */}
-                <div>
-                  <h3
-                    className="text-lg font-bold mb-4"
-                    style={{ color: darkMode ? "white" : "#1f2937" }}
-                  >
-                    🛠 Tools
-                  </h3>
-                  <div className="flex flex-col gap-2">
-                    {[...digitalMarketingTools, ...productivityTools].map((t, i) => (
-                      <ToolBadge key={i} label={t} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Business & Professional Skills — always visible */}
         <div className="mt-10 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="300">
           <div
-            className="rounded-2xl border p-6 sm:p-8"
+            className="rounded-2xl border p-6 sm:p-8 transition-colors duration-500 shadow-xl"
             style={{
               background: darkMode
                 ? "linear-gradient(to bottom right, #1f2937, #111827)"
