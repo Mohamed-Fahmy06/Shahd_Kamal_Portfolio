@@ -1,7 +1,6 @@
 import { FaFacebook, FaLinkedin, FaWhatsapp } from "react-icons/fa6";
 import { FaInstagramSquare } from "react-icons/fa";
 import { DownloadIcon, Mail } from "lucide-react";
-import Mohamed_Fahmy_CV from "../assets/Mohamed_Fahmy_CV.pdf";
 import shahdPhoto from "../assets/shahd_photo.jpg";
 
 const Hero = ({ darkMode }) => {
