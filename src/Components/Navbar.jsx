@@ -17,23 +17,23 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
   ];
 
   const lightColors = {
-    navBg: 'bg-linear-to-br from-orange-200/90 to-white/95',
+    navBg: 'bg-linear-to-br from-rose-100/90 to-white/95',
     textPrimary: 'text-gray-900',
     textSecondary: 'text-gray-600',
-    textHover: 'text-orange-500',
-    textActive: 'text-orange-700',
-    indicator: 'from-orange-500 to-amber-500',
-    button: 'from-orange-500 to-amber-500'
+    textHover: 'text-rose-500',
+    textActive: 'text-rose-600',
+    indicator: 'from-rose-500 to-pink-500',
+    button: 'from-rose-500 to-pink-500'
   };
 
   const darkColors = {
-    navBg: 'bg-linear-to-br from-gray-800/90 to-gray-950/95',
+    navBg: 'bg-linear-to-br from-gray-900/90 to-gray-950/95',
     textPrimary: 'text-white',
     textSecondary: 'text-gray-300',
-    textHover: 'text-orange-400',
-    textActive: 'text-orange-500',
-    indicator: 'from-orange-500 to-amber-500',
-    button: 'from-orange-500 to-amber-500'
+    textHover: 'text-rose-400',
+    textActive: 'text-rose-400',
+    indicator: 'from-rose-500 to-pink-500',
+    button: 'from-rose-500 to-pink-500'
   };
 
   const colors = darkMode ? darkColors : lightColors;
@@ -88,7 +88,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
           >
             <span className={`text-xl font-bold ${colors.textPrimary}`}>
               Portfolio
-              <span className="text-orange-500">.</span>
+              <span className="text-rose-500">.</span>
             </span>
           </motion.a>
 
@@ -106,7 +106,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                     ${
                       activeSection === item.name.toLowerCase()
                         ? colors.textActive
-                        : `${colors.textSecondary} hover:text-orange-500`
+                        : `${colors.textSecondary} hover:text-rose-500`
                     }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -133,7 +133,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
               className={`p-2.5 rounded-full ${
                 darkMode
                   ? "bg-gray-800/90 text-yellow-300 border border-gray-700 hover:border-yellow-400/50"
-                  : "bg-white/90 text-gray-800 border border-orange-200 hover:border-orange-400/50"
+                  : "bg-white/90 text-gray-800 border border-rose-200 hover:border-rose-400/50"
               } shadow-md transition-colors duration-400 cursor-pointer overflow-hidden flex items-center justify-center`}
               aria-label={
                 darkMode ? "Switch to light mode" : "Switch to dark mode"
@@ -215,7 +215,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                     className={`py-3 px-4 text-center rounded-lg ${activeSection === item.name.toLowerCase()
                       ? darkMode
                         ? "bg-gray-800"
-                        : "bg-orange-100"
+                        : "bg-rose-100"
                       : ""}`}
                   >
                     <span

@@ -19,7 +19,7 @@ import covidImg from "../assets/projects/covid19-dashboard.png";
 
 const Projects = ({ darkMode }) => {
   const [activeCategory, setActiveCategory] = useState("all");
-  const [viewMode, setViewMode] = useState("grid"); // "grid" or "table"
+  const [viewMode, setViewMode] = useState("grid");
   const [selectedProject, setSelectedProject] = useState(null);
 
   const projectsList = [
@@ -163,7 +163,7 @@ const Projects = ({ darkMode }) => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-12">
         {/* Section Header */}
         <div className="text-center mb-12" data-aos="fade-up">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest text-orange-500 bg-orange-500/10 border border-orange-500/20 mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest text-rose-500 bg-rose-500/10 border border-rose-500/20 mb-3">
             <Sparkles size={14} /> Analytics &amp; BI Portfolio
           </div>
           <h2
@@ -173,7 +173,7 @@ const Projects = ({ darkMode }) => {
             Data &amp; Analytics{" "}
             <span
               style={{
-                background: "linear-gradient(to right, #f97316, #f59e0b)",
+                background: "linear-gradient(to right, #f43f5e, #fb7185)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
@@ -200,40 +200,40 @@ const Projects = ({ darkMode }) => {
             {
               label: "Analytical Dashboards",
               value: "5+",
-              icon: <BarChart3 className="text-orange-500" size={22} />,
+              icon: <BarChart3 className="text-rose-500" size={22} />,
               detail: "Power BI & Excel",
             },
             {
               label: "Industry Domains",
               value: "3",
-              icon: <Layers className="text-orange-500" size={22} />,
+              icon: <Layers className="text-rose-500" size={22} />,
               detail: "Finance, Health, Telecom",
             },
             {
               label: "KPIs Modeled",
               value: "35+",
-              icon: <TrendingUp className="text-orange-500" size={22} />,
+              icon: <TrendingUp className="text-rose-500" size={22} />,
               detail: "Profit, Liquidity, Care",
             },
             {
               label: "Data Architecture",
               value: "100%",
-              icon: <Activity className="text-orange-500" size={22} />,
+              icon: <Activity className="text-rose-500" size={22} />,
               detail: "DAX & Dynamic Models",
             },
           ].map((stat, idx) => (
             <div
               key={idx}
-              className="p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1"
+              className="p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 shadow-md"
               style={{
                 background: darkMode
                   ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                  : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-                borderColor: darkMode ? "#374151" : "#e5e7eb",
+                  : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
+                borderColor: darkMode ? "#374151" : "#ffe4e6",
               }}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-orange-500">
+                <span className="text-xs font-semibold uppercase tracking-wider text-rose-500">
                   {stat.detail}
                 </span>
                 {stat.icon}
@@ -241,7 +241,7 @@ const Projects = ({ darkMode }) => {
               <div
                 className="text-2xl sm:text-3xl font-extrabold mb-1"
                 style={{
-                  background: "linear-gradient(to right, #f97316, #f59e0b)",
+                  background: "linear-gradient(to right, #f43f5e, #fb7185)",
                   WebkitBackgroundClip: "text",
                   backgroundClip: "text",
                   color: "transparent",
@@ -269,8 +269,8 @@ const Projects = ({ darkMode }) => {
           <div
             className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 p-1.5 rounded-2xl backdrop-blur-md"
             style={{
-              background: darkMode ? "rgba(31, 41, 55, 0.85)" : "rgba(229, 231, 235, 0.85)",
-              border: darkMode ? "1px solid rgba(75, 85, 99, 0.5)" : "1px solid rgba(209, 213, 219, 0.8)",
+              background: darkMode ? "rgba(31, 41, 55, 0.85)" : "rgba(254, 226, 226, 0.6)",
+              border: darkMode ? "1px solid rgba(75, 85, 99, 0.5)" : "1px solid rgba(254, 205, 211, 0.8)",
             }}
           >
             {categories.map((cat) => {
@@ -289,8 +289,8 @@ const Projects = ({ darkMode }) => {
                       layoutId="activeProjectCategory"
                       className="absolute inset-0 rounded-xl"
                       style={{
-                        background: "linear-gradient(to right, #f97316, #f59e0b)",
-                        boxShadow: "0 4px 15px rgba(249, 115, 22, 0.35)",
+                        background: "linear-gradient(to right, #f43f5e, #fb7185)",
+                        boxShadow: "0 4px 15px rgba(244, 63, 94, 0.35)",
                       }}
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
@@ -303,7 +303,7 @@ const Projects = ({ darkMode }) => {
                         ? "rgba(255, 255, 255, 0.25)"
                         : darkMode
                         ? "rgba(55, 65, 81, 0.8)"
-                        : "rgba(209, 213, 219, 0.8)",
+                        : "rgba(254, 205, 211, 0.7)",
                       color: isActive ? "white" : darkMode ? "#9ca3af" : "#6b7280",
                     }}
                   >
@@ -318,14 +318,14 @@ const Projects = ({ darkMode }) => {
           <div
             className="flex items-center gap-1 p-1 rounded-xl"
             style={{
-              background: darkMode ? "rgba(31, 41, 55, 0.85)" : "rgba(229, 231, 235, 0.85)",
+              background: darkMode ? "rgba(31, 41, 55, 0.85)" : "rgba(254, 226, 226, 0.6)",
             }}
           >
             <button
               onClick={() => setViewMode("grid")}
               className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 viewMode === "grid"
-                  ? "bg-orange-500 text-white shadow-md"
+                  ? "bg-rose-500 text-white shadow-md"
                   : darkMode
                   ? "text-gray-400 hover:text-white"
                   : "text-gray-600 hover:text-gray-900"
@@ -338,7 +338,7 @@ const Projects = ({ darkMode }) => {
               onClick={() => setViewMode("table")}
               className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 viewMode === "table"
-                  ? "bg-orange-500 text-white shadow-md"
+                  ? "bg-rose-500 text-white shadow-md"
                   : darkMode
                   ? "text-gray-400 hover:text-white"
                   : "text-gray-600 hover:text-gray-900"
@@ -357,7 +357,7 @@ const Projects = ({ darkMode }) => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
           >
             <AnimatePresence>
-              {filteredProjects.map((project, index) => (
+              {filteredProjects.map((project) => (
                 <motion.div
                   layout
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -368,10 +368,10 @@ const Projects = ({ darkMode }) => {
                   style={{
                     background: darkMode
                       ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                      : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-                    borderColor: darkMode ? "#374151" : "#e5e7eb",
+                      : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
+                    borderColor: darkMode ? "#374151" : "#ffe4e6",
                   }}
-                  className="group rounded-2xl border hover:border-orange-500/50 transition-all duration-500 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl hover:-translate-y-1.5"
+                  className="group rounded-2xl border hover:border-rose-400/50 transition-all duration-500 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl hover:-translate-y-1.5"
                 >
                   {/* Image Container with Domain Tag */}
                   <div
@@ -385,7 +385,7 @@ const Projects = ({ darkMode }) => {
                       className="w-full h-full object-cover object-top transition-transform duration-700 group-hover/img:scale-110"
                     />
                     <div className="absolute top-3 left-3 z-20">
-                      <span className="px-3 py-1 text-[11px] font-bold rounded-full bg-orange-500 text-white shadow-md">
+                      <span className="px-3 py-1 text-[11px] font-bold rounded-full bg-rose-500 text-white shadow-md">
                         {project.categoryLabel}
                       </span>
                     </div>
@@ -412,8 +412,8 @@ const Projects = ({ darkMode }) => {
                     </p>
 
                     {/* Key KPIs Section */}
-                    <div className="mb-4 pt-3 border-t border-gray-700/30">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-orange-500 mb-2 flex items-center gap-1.5">
+                    <div className="mb-4 pt-3 border-t border-gray-700/20">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-rose-500 mb-2 flex items-center gap-1.5">
                         <Activity size={13} /> Key Metrics Analyzed:
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -432,9 +432,9 @@ const Projects = ({ darkMode }) => {
                         ))}
                         {project.kpis.length > 3 && (
                           <span
-                            className="px-2 py-0.5 text-[11px] rounded-md font-medium text-orange-500"
+                            className="px-2 py-0.5 text-[11px] rounded-md font-medium text-rose-500"
                             style={{
-                              backgroundColor: darkMode ? "rgba(249, 115, 22, 0.1)" : "#fff7ed",
+                              backgroundColor: darkMode ? "rgba(244, 63, 94, 0.1)" : "#fff1f2",
                             }}
                           >
                             +{project.kpis.length - 3} more
@@ -450,9 +450,9 @@ const Projects = ({ darkMode }) => {
                           key={idx}
                           className="px-2.5 py-0.5 text-[11px] rounded-full border transition-colors font-medium"
                           style={{
-                            backgroundColor: darkMode ? "rgba(249, 115, 22, 0.1)" : "#fff7ed",
-                            color: "#f97316",
-                            borderColor: darkMode ? "rgba(249, 115, 22, 0.2)" : "#ffedd5",
+                            backgroundColor: darkMode ? "rgba(244, 63, 94, 0.1)" : "#fff1f2",
+                            color: "#f43f5e",
+                            borderColor: darkMode ? "rgba(244, 63, 94, 0.2)" : "#fecdd3",
                           }}
                         >
                           {tag}
@@ -465,8 +465,8 @@ const Projects = ({ darkMode }) => {
                       onClick={() => setSelectedProject(project)}
                       className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold rounded-xl text-white shadow-lg transition-all duration-300 hover:scale-102 cursor-pointer"
                       style={{
-                        background: "linear-gradient(to right, #f97316, #f59e0b)",
-                        boxShadow: "0 4px 15px rgba(249, 115, 22, 0.25)",
+                        background: "linear-gradient(to right, #f43f5e, #fb7185)",
+                        boxShadow: "0 4px 15px rgba(244, 63, 94, 0.25)",
                       }}
                     >
                       <Eye size={15} /> View Dashboard Details
@@ -488,8 +488,8 @@ const Projects = ({ darkMode }) => {
             style={{
               background: darkMode
                 ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-              borderColor: darkMode ? "#374151" : "#e5e7eb",
+                : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
+              borderColor: darkMode ? "#374151" : "#ffe4e6",
             }}
           >
             <div className="overflow-x-auto">
@@ -497,9 +497,9 @@ const Projects = ({ darkMode }) => {
                 <thead
                   className="border-b text-xs font-bold uppercase tracking-wider"
                   style={{
-                    backgroundColor: darkMode ? "rgba(17, 24, 39, 0.8)" : "#f9fafb",
+                    backgroundColor: darkMode ? "rgba(17, 24, 39, 0.8)" : "#fff1f2",
                     color: darkMode ? "#9ca3af" : "#6b7280",
-                    borderColor: darkMode ? "#374151" : "#e5e7eb",
+                    borderColor: darkMode ? "#374151" : "#ffe4e6",
                   }}
                 >
                   <tr>
@@ -514,7 +514,7 @@ const Projects = ({ darkMode }) => {
                   {filteredProjects.map((proj) => (
                     <tr
                       key={proj.id}
-                      className="hover:bg-orange-500/5 transition-colors cursor-pointer"
+                      className="hover:bg-rose-500/5 transition-colors cursor-pointer"
                       onClick={() => setSelectedProject(proj)}
                     >
                       <td className="py-4 px-6">
@@ -529,7 +529,7 @@ const Projects = ({ darkMode }) => {
                         </div>
                       </td>
                       <td className="py-4 px-6 whitespace-nowrap">
-                        <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-orange-500/10 text-orange-500 border border-orange-500/20">
+                        <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20">
                           {proj.categoryLabel}
                         </span>
                       </td>
@@ -540,9 +540,9 @@ const Projects = ({ darkMode }) => {
                               key={i}
                               className="px-2 py-0.5 text-[11px] rounded-md font-medium border"
                               style={{
-                                backgroundColor: darkMode ? "#374151" : "#f3f4f6",
+                                backgroundColor: darkMode ? "#374151" : "#ffffff",
                                 color: darkMode ? "#d1d5db" : "#374151",
-                                borderColor: darkMode ? "#4b5563" : "#e5e7eb",
+                                borderColor: darkMode ? "#4b5563" : "#fecdd3",
                               }}
                             >
                               {k}
@@ -561,7 +561,7 @@ const Projects = ({ darkMode }) => {
                             e.stopPropagation();
                             setSelectedProject(proj);
                           }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-linear-to-r from-orange-500 to-amber-500 shadow-md hover:scale-105 transition-transform"
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-linear-to-r from-rose-500 to-pink-500 shadow-md hover:scale-105 transition-transform"
                         >
                           Inspect
                         </button>
@@ -581,8 +581,8 @@ const Projects = ({ darkMode }) => {
             style={{
               background: darkMode
                 ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-              borderColor: darkMode ? "#374151" : "#e5e7eb",
+                : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
+              borderColor: darkMode ? "#374151" : "#ffe4e6",
             }}
           >
             <div className="text-left">
@@ -600,9 +600,9 @@ const Projects = ({ darkMode }) => {
               href="https://www.linkedin.com/in/shahd-kamal-30a99436b"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white text-sm rounded-full whitespace-nowrap shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white text-sm rounded-full whitespace-nowrap shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all"
               style={{
-                background: "linear-gradient(to right, #f97316, #f59e0b)",
+                background: "linear-gradient(to right, #f43f5e, #fb7185)",
               }}
             >
               Connect on LinkedIn
@@ -633,17 +633,17 @@ const Projects = ({ darkMode }) => {
               className="relative w-full max-w-4xl rounded-3xl border overflow-hidden shadow-2xl z-10 max-h-[90vh] flex flex-col my-auto"
               style={{
                 background: darkMode ? "#111827" : "#ffffff",
-                borderColor: darkMode ? "#374151" : "#e5e7eb",
+                borderColor: darkMode ? "#374151" : "#ffe4e6",
               }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
               <div
                 className="flex items-center justify-between p-5 sm:p-6 border-b"
-                style={{ borderColor: darkMode ? "#374151" : "#e5e7eb" }}
+                style={{ borderColor: darkMode ? "#374151" : "#ffe4e6" }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 text-xs font-bold rounded-full bg-orange-500 text-white">
+                  <span className="px-3 py-1 text-xs font-bold rounded-full bg-rose-500 text-white">
                     {selectedProject.categoryLabel}
                   </span>
                   <h3
@@ -666,7 +666,7 @@ const Projects = ({ darkMode }) => {
               {/* Modal Body */}
               <div className="overflow-y-auto p-5 sm:p-8 space-y-6">
                 {/* Full-width Screenshot Container */}
-                <div className="rounded-2xl overflow-hidden border border-orange-500/20 shadow-lg bg-black/40">
+                <div className="rounded-2xl overflow-hidden border border-rose-500/20 shadow-lg bg-black/40">
                   <img
                     src={selectedProject.image}
                     alt={selectedProject.alt}
@@ -680,7 +680,7 @@ const Projects = ({ darkMode }) => {
                     className="text-base font-bold mb-2 flex items-center gap-2"
                     style={{ color: darkMode ? "white" : "#1f2937" }}
                   >
-                    <BarChart3 className="text-orange-500" size={18} /> Executive Overview &amp; Architecture
+                    <BarChart3 className="text-rose-500" size={18} /> Executive Overview &amp; Architecture
                   </h4>
                   <p
                     className="text-sm sm:text-base leading-relaxed"
@@ -696,7 +696,7 @@ const Projects = ({ darkMode }) => {
                     className="text-base font-bold mb-3 flex items-center gap-2"
                     style={{ color: darkMode ? "white" : "#1f2937" }}
                   >
-                    <Activity className="text-orange-500" size={18} /> Core Key Performance Indicators (KPIs) Modeled
+                    <Activity className="text-rose-500" size={18} /> Core Key Performance Indicators (KPIs) Modeled
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {selectedProject.kpis.map((kpi, kIdx) => (
@@ -705,11 +705,11 @@ const Projects = ({ darkMode }) => {
                         className="flex items-center gap-2.5 p-3 rounded-xl border text-xs sm:text-sm font-semibold"
                         style={{
                           background: darkMode ? "rgba(31, 41, 55, 0.6)" : "#f9fafb",
-                          borderColor: darkMode ? "#374151" : "#e5e7eb",
+                          borderColor: darkMode ? "#374151" : "#ffe4e6",
                           color: darkMode ? "white" : "#1f2937",
                         }}
                       >
-                        <CheckCircle2 size={16} className="text-orange-500 flex-shrink-0" />
+                        <CheckCircle2 size={16} className="text-rose-500 flex-shrink-0" />
                         <span>{kpi}</span>
                       </div>
                     ))}
@@ -721,16 +721,16 @@ const Projects = ({ darkMode }) => {
                   <div
                     className="p-4 rounded-2xl border"
                     style={{
-                      backgroundColor: darkMode ? "rgba(249, 115, 22, 0.08)" : "#fff7ed",
-                      borderColor: darkMode ? "rgba(249, 115, 22, 0.25)" : "#ffedd5",
+                      backgroundColor: darkMode ? "rgba(244, 63, 94, 0.08)" : "#fff1f2",
+                      borderColor: darkMode ? "rgba(244, 63, 94, 0.25)" : "#fecdd3",
                     }}
                   >
-                    <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-1">
+                    <p className="text-xs font-bold uppercase tracking-wider text-rose-500 mb-1">
                       Business Impact &amp; Value Delivered:
                     </p>
                     <p
                       className="text-xs sm:text-sm font-medium leading-relaxed"
-                      style={{ color: darkMode ? "#fed7aa" : "#9a3412" }}
+                      style={{ color: darkMode ? "#fecdd3" : "#9f1239" }}
                     >
                       {selectedProject.impact}
                     </p>
@@ -740,7 +740,7 @@ const Projects = ({ darkMode }) => {
                 {/* Technologies & Tools */}
                 <div>
                   <h4
-                    className="text-xs font-bold uppercase tracking-wider mb-2.5 text-orange-500"
+                    className="text-xs font-bold uppercase tracking-wider mb-2.5 text-rose-500"
                   >
                     Analytical Tools &amp; Methods:
                   </h4>
@@ -752,7 +752,7 @@ const Projects = ({ darkMode }) => {
                         style={{
                           backgroundColor: darkMode ? "#1f2937" : "#f3f4f6",
                           color: darkMode ? "white" : "#374151",
-                          borderColor: darkMode ? "#4b5563" : "#e5e7eb",
+                          borderColor: darkMode ? "#4b5563" : "#ffe4e6",
                         }}
                       >
                         {tag}
@@ -765,14 +765,14 @@ const Projects = ({ darkMode }) => {
               {/* Modal Footer */}
               <div
                 className="p-4 sm:p-6 border-t flex items-center justify-between"
-                style={{ borderColor: darkMode ? "#374151" : "#e5e7eb" }}
+                style={{ borderColor: darkMode ? "#374151" : "#ffe4e6" }}
               >
                 <span className="text-xs" style={{ color: darkMode ? "#9ca3af" : "#6b7280" }}>
                   Power BI &bull; Data Analysis &bull; Shahd Kamal
                 </span>
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-orange-500 to-amber-500 hover:scale-105 transition-transform cursor-pointer"
+                  className="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-linear-to-r from-rose-500 to-pink-500 hover:scale-105 transition-transform cursor-pointer"
                 >
                   Close Inspector
                 </button>

@@ -58,11 +58,11 @@ const Skills = ({ darkMode }) => {
     <motion.span
       whileHover={{ scale: 1.05, y: -2 }}
       transition={{ duration: 0.15 }}
-      className="px-3 py-1.5 rounded-full text-sm font-medium border transition-colors inline-block cursor-default"
+      className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold border transition-colors inline-block cursor-default"
       style={{
-        backgroundColor: darkMode ? "rgba(249, 115, 22, 0.1)" : "#fff7ed",
-        color: "#f97316",
-        borderColor: darkMode ? "rgba(249, 115, 22, 0.25)" : "#ffedd5",
+        backgroundColor: darkMode ? "rgba(244, 63, 94, 0.1)" : "#fff1f2",
+        color: "#f43f5e",
+        borderColor: darkMode ? "rgba(244, 63, 94, 0.25)" : "#fecdd3",
       }}
     >
       {label}
@@ -73,18 +73,18 @@ const Skills = ({ darkMode }) => {
     <motion.div
       whileHover={{ scale: 1.02, x: 5 }}
       transition={{ duration: 0.15 }}
-      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300 cursor-default"
+      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all duration-300 cursor-default"
       style={{
         background: darkMode
           ? "linear-gradient(to bottom right, #1f2937, #111827)"
-          : "linear-gradient(to bottom right, #ffffff, #f3f4f6)",
+          : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
         color: darkMode ? "white" : "#1f2937",
-        borderColor: darkMode ? "#374151" : "#e5e7eb",
+        borderColor: darkMode ? "#374151" : "#ffe4e6",
       }}
     >
       <span
         className="w-2 h-2 rounded-full flex-shrink-0"
-        style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
+        style={{ background: "linear-gradient(to right, #f43f5e, #fb7185)" }}
       />
       {label}
     </motion.div>
@@ -106,7 +106,7 @@ const Skills = ({ darkMode }) => {
             My{" "}
             <span
               style={{
-                background: "linear-gradient(to right, #f97316, #f59e0b)",
+                background: "linear-gradient(to right, #f43f5e, #fb7185)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
@@ -116,8 +116,8 @@ const Skills = ({ darkMode }) => {
             </span>
           </h1>
           <p
-            className="max-w-2xl mx-auto leading-relaxed text-lg"
-            style={{ color: darkMode ? "#d1d5db" : "#4b5563" }}
+            className="max-w-2xl mx-auto leading-relaxed text-base sm:text-lg"
+            style={{ color: darkMode ? "#d1d5db" : "#6b7280" }}
           >
             A blend of analytical expertise and creative digital strategy.
           </p>
@@ -128,8 +128,8 @@ const Skills = ({ darkMode }) => {
           <div
             className="flex rounded-2xl p-1.5 gap-2 backdrop-blur-md transition-colors duration-400"
             style={{
-              background: darkMode ? "rgba(31, 41, 55, 0.85)" : "rgba(229, 231, 235, 0.85)",
-              border: darkMode ? "1px solid rgba(75, 85, 99, 0.5)" : "1px solid rgba(209, 213, 219, 0.8)",
+              background: darkMode ? "rgba(31, 41, 55, 0.85)" : "rgba(254, 226, 226, 0.6)",
+              border: darkMode ? "1px solid rgba(75, 85, 99, 0.5)" : "1px solid rgba(254, 205, 211, 0.8)",
             }}
           >
             {tabs.map((tab) => {
@@ -138,7 +138,7 @@ const Skills = ({ darkMode }) => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className="relative flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-colors duration-300 cursor-pointer"
+                  className="relative flex items-center gap-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-colors duration-300 cursor-pointer"
                   style={{
                     color: isActive ? "#ffffff" : darkMode ? "#9ca3af" : "#4b5563",
                   }}
@@ -148,8 +148,8 @@ const Skills = ({ darkMode }) => {
                       layoutId="activeSkillTabIndicator"
                       className="absolute inset-0 rounded-xl"
                       style={{
-                        background: "linear-gradient(to right, #f97316, #f59e0b)",
-                        boxShadow: "0 4px 20px rgba(249, 115, 22, 0.4)",
+                        background: "linear-gradient(to right, #f43f5e, #fb7185)",
+                        boxShadow: "0 4px 20px rgba(244, 63, 94, 0.35)",
                       }}
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
@@ -178,13 +178,13 @@ const Skills = ({ darkMode }) => {
                 style={{
                   background: darkMode
                     ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                    : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-                  borderColor: darkMode ? "#374151" : "#e5e7eb",
+                    : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
+                  borderColor: darkMode ? "#374151" : "#ffe4e6",
                 }}
               >
                 <div
                   className="h-1 w-20 rounded-full mb-6"
-                  style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
+                  style={{ background: "linear-gradient(to right, #f43f5e, #fb7185)" }}
                 />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Skills */}
@@ -193,7 +193,7 @@ const Skills = ({ darkMode }) => {
                       className="text-lg font-bold mb-4 flex items-center gap-2"
                       style={{ color: darkMode ? "white" : "#1f2937" }}
                     >
-                      <BarChart2 size={20} className="text-orange-500" />
+                      <BarChart2 size={20} className="text-rose-500" />
                       Skills
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -229,13 +229,13 @@ const Skills = ({ darkMode }) => {
                 style={{
                   background: darkMode
                     ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                    : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-                  borderColor: darkMode ? "#374151" : "#e5e7eb",
+                    : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
+                  borderColor: darkMode ? "#374151" : "#ffe4e6",
                 }}
               >
                 <div
                   className="h-1 w-20 rounded-full mb-6"
-                  style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
+                  style={{ background: "linear-gradient(to right, #f43f5e, #fb7185)" }}
                 />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Skills */}
@@ -244,7 +244,7 @@ const Skills = ({ darkMode }) => {
                       className="text-lg font-bold mb-4 flex items-center gap-2"
                       style={{ color: darkMode ? "white" : "#1f2937" }}
                     >
-                      <Megaphone size={20} className="text-orange-500" />
+                      <Megaphone size={20} className="text-rose-500" />
                       Skills
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -280,19 +280,19 @@ const Skills = ({ darkMode }) => {
             style={{
               background: darkMode
                 ? "linear-gradient(to bottom right, #1f2937, #111827)"
-                : "linear-gradient(to bottom right, #ffffff, #f9fafb)",
-              borderColor: darkMode ? "#374151" : "#e5e7eb",
+                : "linear-gradient(to bottom right, #ffffff, #fff1f2)",
+              borderColor: darkMode ? "#374151" : "#ffe4e6",
             }}
           >
             <div
               className="h-1 w-20 rounded-full mb-6"
-              style={{ background: "linear-gradient(to right, #f97316, #f59e0b)" }}
+              style={{ background: "linear-gradient(to right, #f43f5e, #fb7185)" }}
             />
             <h3
               className="text-lg font-bold mb-5 flex items-center gap-2"
               style={{ color: darkMode ? "white" : "#1f2937" }}
             >
-              <Briefcase size={20} className="text-orange-500" />
+              <Briefcase size={20} className="text-rose-500" />
               Business &amp; Professional Skills
             </h3>
             <div className="flex flex-wrap gap-2">
