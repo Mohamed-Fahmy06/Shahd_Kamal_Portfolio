@@ -152,7 +152,7 @@ const Hero = ({ darkMode }) => {
           >
             <div className="relative w-full max-w-sm sm:max-w-md group">
               {/* Decorative background glow */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition duration-500" />
+              <div className="absolute -inset-2 bg-linear-to-r from-rose-500 via-pink-500 to-rose-400 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition duration-500" />
               
               <div className="relative rounded-3xl overflow-hidden border-2 border-rose-400/30 shadow-2xl backdrop-blur-sm">
                 <img
