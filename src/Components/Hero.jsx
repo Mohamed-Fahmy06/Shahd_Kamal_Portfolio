@@ -1,5 +1,4 @@
-import { FaFacebook, FaLinkedin, FaWhatsapp } from "react-icons/fa6";
-import { FaInstagramSquare } from "react-icons/fa";
+import { FaLinkedin, FaWhatsapp } from "react-icons/fa6";
 import { DownloadIcon, Mail } from "lucide-react";
 import shahdPhoto from "../assets/shahd_photo.jpg";
 
