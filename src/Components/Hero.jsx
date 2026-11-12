@@ -14,7 +14,7 @@ const Hero = ({ darkMode }) => {
       icon: <FaFacebook />,
       href: "https://web.facebook.com/profile.php?id=100084434403811",
     },
-    { icon: <FaWhatsapp />, href: "https://wa.me/201103149905" },
+    { icon: <FaWhatsapp />, href: "https://wa.me/201156785653" },
     {
       icon: <FaLinkedin />,
       href: "https://www.linkedin.com/in/shahd-kamal-30a99436b",

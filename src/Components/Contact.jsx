@@ -75,7 +75,8 @@ const Contact = ({ darkMode }) => {
               color: darkMode ? "#d1d5db" : "#6b7280",
             }}
           >
-            I'm always open to discussing data analytics collaborations, business intelligence dashboards, and digital growth strategies.
+            I'm always open to discussing data analytics collaborations,
+            business intelligence dashboards, and digital growth strategies.
           </p>
         </div>
 
@@ -87,15 +88,15 @@ const Contact = ({ darkMode }) => {
           >
             <div className="relative w-full max-w-sm group mb-6">
               {/* Ambient Glow */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400 rounded-3xl blur-2xl opacity-25 group-hover:opacity-40 transition duration-500" />
-              
+              <div className="absolute -inset-2 bg-linear-to-r from-rose-500 via-pink-500 to-rose-400 rounded-3xl blur-2xl opacity-25 group-hover:opacity-40 transition duration-500" />
+
               <div className="relative rounded-3xl overflow-hidden border-2 border-rose-400/30 shadow-2xl backdrop-blur-sm">
                 <img
                   src={shahdPhoto}
                   alt="Shahd Kamal"
                   className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500"
                 />
-                
+
                 {/* Floating pill badge on photo */}
                 <div
                   className="absolute bottom-3 left-3 right-3 p-3 rounded-2xl backdrop-blur-md border border-white/20 shadow-lg flex items-center justify-between"
@@ -108,7 +109,10 @@ const Contact = ({ darkMode }) => {
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                     <div>
-                      <p className="text-xs font-bold" style={{ color: darkMode ? "white" : "#1f2937" }}>
+                      <p
+                        className="text-xs font-bold"
+                        style={{ color: darkMode ? "white" : "#1f2937" }}
+                      >
                         Shahd Kamal
                       </p>
                       <p className="text-[11px] text-rose-500 font-semibold">
@@ -133,12 +137,16 @@ const Contact = ({ darkMode }) => {
                   color: darkMode ? "#f3f4f6" : "#1f2937",
                 }}
               >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-500/10 text-rose-500 flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-500/10 text-rose-500 shrink-0">
                   <FaLinkedin className="w-4 h-4" />
                 </div>
                 <div className="truncate">
-                  <p className="text-[11px] text-rose-500 uppercase tracking-wider font-bold">LinkedIn</p>
-                  <p className="truncate">linkedin.com/in/shahd-kamal-30a99436b</p>
+                  <p className="text-[11px] text-rose-500 uppercase tracking-wider font-bold">
+                    LinkedIn
+                  </p>
+                  <p className="truncate">
+                    linkedin.com/in/shahd-kamal-30a99436b
+                  </p>
                 </div>
               </a>
 
@@ -153,12 +161,14 @@ const Contact = ({ darkMode }) => {
                   color: darkMode ? "#f3f4f6" : "#1f2937",
                 }}
               >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-500/10 text-rose-500 flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-500/10 text-rose-500 shrink-0">
                   <Phone size={16} />
                 </div>
                 <div>
-                  <p className="text-[11px] text-rose-500 uppercase tracking-wider font-bold">WhatsApp</p>
-                  <p>+20 110 314 9905</p>
+                  <p className="text-[11px] text-rose-500 uppercase tracking-wider font-bold">
+                    WhatsApp
+                  </p>
+                  <p>+20 11 56785653</p>
                 </div>
               </a>
             </div>
@@ -282,7 +292,9 @@ const Contact = ({ darkMode }) => {
             {result && (
               <p
                 className={`mt-4 text-center text-sm font-semibold ${
-                  result.includes("Successfully") ? "text-emerald-500" : "text-rose-500"
+                  result.includes("Successfully")
+                    ? "text-emerald-500"
+                    : "text-rose-500"
                 }`}
               >
                 {result}
