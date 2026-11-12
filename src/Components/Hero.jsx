@@ -6,14 +6,7 @@ import shahdPhoto from "../assets/shahd_photo.jpg";
 
 const Hero = ({ darkMode }) => {
   const socialIcons = [
-    {
-      icon: <FaInstagramSquare />,
-      href: "https://www.instagram.com/moo__fahmy?igsh=MXI2Z2xkdXV2d2Zpcg==",
-    },
-    {
-      icon: <FaFacebook />,
-      href: "https://web.facebook.com/profile.php?id=100084434403811",
-    },
+  
     { icon: <FaWhatsapp />, href: "https://wa.me/201156785653" },
     {
       icon: <FaLinkedin />,
