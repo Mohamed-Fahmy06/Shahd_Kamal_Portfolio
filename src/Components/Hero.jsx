@@ -2,7 +2,7 @@ import { FaFacebook, FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa6";
 import { FaInstagramSquare } from "react-icons/fa";
 import { DownloadIcon, Mail } from "lucide-react";
 import Mohamed_Fahmy_CV from "../assets/Mohamed_Fahmy_CV.pdf";
-import Avatar from "../assets/Avatar.png";
+import shahdPhoto from "../assets/shahd_photo.jpg";
 
 const Hero = ({ darkMode }) => {
   const socialIcons = [
@@ -17,9 +17,9 @@ const Hero = ({ darkMode }) => {
     { icon: <FaWhatsapp />, href: "https://wa.me/201103149905" },
     {
       icon: <FaLinkedin />,
-      href: "https://www.linkedin.com/in/mohamed-fahmy-omar-297aa33a8",
+      href: "https://www.linkedin.com/in/shahd-kamal-30a99436b",
     },
-    { icon: <FaGithub />, href: "https://github.com/Mohamed-Fahmy06" },
+    { icon: <FaGithub />, href: "https://github.com/Shahd-Kamall" },
   ];
 
   const darkTheme = {
@@ -147,18 +147,45 @@ const Hero = ({ darkMode }) => {
           </div>
           {/* IMAGES */}
           <div
-            className="lg:w-1/2 w-full h-fit max-w-md lg:max-w-md mt-2 lg:mt-0 flex items-center justify-center"
+            className="lg:w-1/2 w-full h-fit max-w-md lg:max-w-lg mt-6 lg:mt-0 flex items-center justify-center"
             data-aos="fade-left"
             data-aos-delay="400"
           >
-            <div className="relative w-4/5 sm:w3/4 lg:w-full">
-              <div className="relative overflow-hidden">
+            <div className="relative w-full max-w-sm sm:max-w-md group">
+              {/* Decorative background glow */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl blur-2xl opacity-25 group-hover:opacity-40 transition duration-500" />
+              
+              <div className="relative rounded-3xl overflow-hidden border-2 border-orange-500/30 shadow-2xl backdrop-blur-sm">
                 <img
-                  src={Avatar}
-                  alt=""
-                  className=" w-full h-fit object-cover transform
-                            hover:scale-105 transition-transform duration-400 animate-pulse"
+                  src={shahdPhoto}
+                  alt="Shahd Kamal - Data Analyst & Digital Marketing Specialist"
+                  className="w-full h-auto object-cover transform group-hover:scale-103 transition-transform duration-500"
                 />
+                
+                {/* Floating pill badge on photo */}
+                <div
+                  className="absolute bottom-3 left-3 right-3 p-3 rounded-2xl backdrop-blur-md border border-white/20 shadow-lg flex items-center justify-between"
+                  style={{
+                    background: darkMode
+                      ? "rgba(17, 24, 39, 0.85)"
+                      : "rgba(255, 255, 255, 0.85)",
+                  }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <div className="text-left">
+                      <p className="text-xs font-bold leading-tight" style={{ color: darkMode ? "white" : "#1f2937" }}>
+                        Shahd Kamal
+                      </p>
+                      <p className="text-[11px] text-orange-500 font-medium">
+                        Data Analysis & Marketing
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-orange-500/15 text-orange-500 border border-orange-500/30">
+                    Power BI
+                  </span>
+                </div>
               </div>
             </div>
           </div>

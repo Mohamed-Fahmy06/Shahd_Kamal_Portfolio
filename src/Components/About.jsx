@@ -1,4 +1,4 @@
-import ABout from "../assets/ABout.png";
+import shahdPhoto from "../assets/shahd_photo.jpg";
 import { GraduationCap, Briefcase, Layout, ArrowRight } from "lucide-react";
 
 const About = ({ darkMode }) => {
@@ -16,25 +16,22 @@ const About = ({ darkMode }) => {
           data-aos-delay="300"
           className="flex flex-wrap justify-center gap-4 relative order-2 lg:order-1"
         >
-          <div className=" relative w-75 h-75 lg:w-96 lg:h-96 lg:mt-15">
+          <div className="relative w-72 sm:w-80 lg:w-96">
             {/* image background decoration */}
             <div
-              className="absolute -inset-5 lg:-inset-20 
-                      bg-linear-to-br from-orange-400 via-orange-500 to-orange-600 rotate-12 star-shape opacity-20 blur-2xl z-0"
+              className="absolute -inset-4 bg-linear-to-br from-orange-400 via-orange-500 to-orange-600 rounded-3xl opacity-20 blur-2xl z-0"
               data-aos="zoom-in"
               data-aos-delay="600"
-            ></div>
+            />
             <div
-              className="absolute -inset-2 lg:-inset-4 
-                      bg-linear-to-tr from-orange-500/20 to-transparent rounded-3xl rotate-6 z-0"
+              className="absolute -inset-2 bg-linear-to-tr from-orange-500/20 to-transparent rounded-3xl rotate-3 z-0"
               data-aos="fade-up"
               data-aos-delay="700"
-            ></div>
+            />
             <img
-              src={ABout}
-              alt="Mohamed's Portrait"
-              className="absolute inset-0 object-cover z-10 
-              transition-all duration-500 hover:scale-105 -top-18 lg:-top-35"
+              src={shahdPhoto}
+              alt="Shahd Kamal"
+              className="relative w-full h-auto object-cover rounded-3xl z-10 border-2 border-orange-500/30 shadow-2xl transition-all duration-500 hover:scale-102"
               data-aos="zoom-in"
               data-aos-delay="400"
             />
