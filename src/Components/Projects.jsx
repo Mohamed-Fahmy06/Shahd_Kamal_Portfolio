@@ -670,7 +670,7 @@ const Projects = ({ darkMode }) => {
                   <img
                     src={selectedProject.image}
                     alt={selectedProject.alt}
-                    className="w-full max-h-[420px] object-cover object-top"
+                    className="w-full max-h-105 object-cover object-top"
                   />
                 </div>
 
@@ -709,7 +709,7 @@ const Projects = ({ darkMode }) => {
                           color: darkMode ? "white" : "#1f2937",
                         }}
                       >
-                        <CheckCircle2 size={16} className="text-rose-500 flex-shrink-0" />
+                        <CheckCircle2 size={16} className="text-rose-500 shrink-0" />
                         <span>{kpi}</span>
                       </div>
                     ))}

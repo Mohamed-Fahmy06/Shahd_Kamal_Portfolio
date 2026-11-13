@@ -166,7 +166,7 @@ const Experience = ({ darkMode }) => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-700/20">
                 <div className="flex items-start gap-4">
                   <span
-                    className="text-4xl sm:text-5xl font-extrabold leading-none flex-shrink-0"
+                    className="text-4xl sm:text-5xl font-extrabold leading-none shrink-0"
                     style={{
                       background: "linear-gradient(to right, #f43f5e, #fb7185)",
                       WebkitBackgroundClip: "text",
@@ -229,7 +229,7 @@ const Experience = ({ darkMode }) => {
                       className="flex items-start gap-3 text-xs sm:text-sm leading-relaxed"
                       style={{ color: darkMode ? "#d1d5db" : "#374151" }}
                     >
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-rose-500 flex-shrink-0" />
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
                       <span>{bullet}</span>
                     </li>
                   ))}
@@ -299,7 +299,7 @@ const Experience = ({ darkMode }) => {
                     color: darkMode ? "white" : "#1f2937",
                   }}
                 >
-                  <CheckCircle2 size={16} className="text-rose-500 flex-shrink-0" />
+                  <CheckCircle2 size={16} className="text-rose-500 shrink-0" />
                   <span>{highlight}</span>
                 </div>
               ))}

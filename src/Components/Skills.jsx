@@ -83,7 +83,7 @@ const Skills = ({ darkMode }) => {
       }}
     >
       <span
-        className="w-2 h-2 rounded-full flex-shrink-0"
+        className="w-2 h-2 rounded-full shrink-0"
         style={{ background: "linear-gradient(to right, #f43f5e, #fb7185)" }}
       />
       {label}
