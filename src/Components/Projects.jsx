@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart3,
@@ -12,6 +12,9 @@ import {
   LayoutGrid,
   Sparkles,
 } from "lucide-react";
+import { client } from "../sanity/client";
+import { urlForImage } from "../sanity/image";
+import { PROJECTS_QUERY } from "../sanity/queries";
 
 import orascomImg from "../assets/projects/orascom-dashboard.jpg";
 import magdiYacoubImg from "../assets/projects/magdi-yacoub-dashboard.jpg";
@@ -130,29 +133,64 @@ const Projects = ({ darkMode }) => {
     },
   ];
 
+  const [sanityProjects, setSanityProjects] = useState(null);
+
+  useEffect(() => {
+    client
+      .fetch(PROJECTS_QUERY)
+      .then((data) => {
+        if (data && data.length > 0) {
+          const mapped = data.map((item, idx) => ({
+            id: item._id || idx + 1,
+            title: item.title,
+            category: item.category?.toLowerCase().includes("financial")
+              ? "financial"
+              : item.category?.toLowerCase().includes("health")
+              ? "healthcare"
+              : "business",
+            categoryLabel: item.category || "Financial Analysis",
+            des: item.summary,
+            longDes: item.description,
+            image: item.mainImage?.asset
+              ? urlForImage(item.mainImage).width(1600).url()
+              : (idx === 0 ? orascomImg : idx === 1 ? magdiYacoubImg : covidImg),
+            alt: item.title,
+            kpis: item.kpis || [],
+            tags: item.technologies || [],
+            status: "Completed",
+            impact: item.summary,
+          }));
+          setSanityProjects(mapped);
+        }
+      })
+      .catch((err) => console.warn("Sanity fetch projects fallback:", err));
+  }, []);
+
+  const currentProjects = sanityProjects || projectsList;
+
   const categories = [
-    { id: "all", label: "All Dashboards", count: projectsList.length },
+    { id: "all", label: "All Dashboards", count: currentProjects.length },
     {
       id: "financial",
       label: "Financial Analysis",
-      count: projectsList.filter((p) => p.category === "financial").length,
+      count: currentProjects.filter((p) => p.category === "financial").length,
     },
     {
       id: "healthcare",
       label: "Healthcare Analytics",
-      count: projectsList.filter((p) => p.category === "healthcare").length,
+      count: currentProjects.filter((p) => p.category === "healthcare").length,
     },
     {
       id: "business",
       label: "Business Intelligence",
-      count: projectsList.filter((p) => p.category === "business").length,
+      count: currentProjects.filter((p) => p.category === "business").length,
     },
   ];
 
   const filteredProjects =
     activeCategory === "all"
-      ? projectsList
-      : projectsList.filter((p) => p.category === activeCategory);
+      ? currentProjects
+      : currentProjects.filter((p) => p.category === activeCategory);
 
   return (
     <section

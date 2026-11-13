@@ -27,3 +27,7 @@ dist-ssr
 *.pbix/
 *.pbix
 
+# Local env
+.env
+.env*.local
+

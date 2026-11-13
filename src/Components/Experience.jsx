@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, TrendingUp, GraduationCap, Award, CheckCircle2, Calendar, Building2 } from "lucide-react";
+import { client } from "../sanity/client";
+import { EXPERIENCES_QUERY } from "../sanity/queries";
 
 const Experience = ({ darkMode }) => {
   const [activeTab, setActiveTab] = useState("cfa");
@@ -60,7 +62,35 @@ const Experience = ({ darkMode }) => {
     { id: "trainer", label: "Finance Trainer", icon: <GraduationCap size={18} /> },
   ];
 
-  const activeExp = experiences[activeTab];
+  const [sanityExperiences, setSanityExperiences] = useState(null);
+
+  useEffect(() => {
+    client
+      .fetch(EXPERIENCES_QUERY)
+      .then((data) => {
+        if (data && data.length > 0) {
+          const map = {};
+          data.forEach((item, idx) => {
+            const key = idx === 0 ? "cfa" : "trainer";
+            map[key] = {
+              number: item.number || (idx === 0 ? "01" : "02"),
+              category: item.category,
+              title: item.title,
+              role: item.role,
+              period: item.period,
+              organization: idx === 0 ? "CFA Institute Research Challenge" : "National Egyptian E-Learning University",
+              badge: item.badge,
+              bullets: item.bullets || [],
+              skills: item.highlights || [],
+            };
+          });
+          setSanityExperiences(map);
+        }
+      })
+      .catch((err) => console.warn("Sanity fetch experiences fallback:", err));
+  }, []);
+
+  const activeExp = (sanityExperiences || experiences)[activeTab];
 
   return (
     <section

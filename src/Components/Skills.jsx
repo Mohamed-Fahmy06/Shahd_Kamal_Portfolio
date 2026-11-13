@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart2, Megaphone, Briefcase } from "lucide-react";
+import { client } from "../sanity/client";
+import { SKILLS_QUERY } from "../sanity/queries";
 
 const Skills = ({ darkMode }) => {
   const [activeTab, setActiveTab] = useState("data");
@@ -48,6 +50,43 @@ const Skills = ({ darkMode }) => {
     "Teamwork & Collaboration",
     "Time Management",
   ];
+
+  const [sanitySkills, setSanitySkills] = useState(null);
+
+  useEffect(() => {
+    client
+      .fetch(SKILLS_QUERY)
+      .then((data) => {
+        if (data && data.length > 0) {
+          const categorized = {
+            dataAnalysis: [],
+            dataTools: [],
+            marketing: [],
+            marketingTools: [],
+            productivity: [],
+            business: [],
+          };
+          data.forEach((s) => {
+            if (s.category === "Data Analysis & Financial Research") categorized.dataAnalysis.push(s.name);
+            else if (s.category === "Data Analysis Tools") categorized.dataTools.push(s.name);
+            else if (s.category === "Digital Marketing") categorized.marketing.push(s.name);
+            else if (s.category === "Productivity & Presentation") {
+              if (s.name === "Canva" || s.name === "Meta Business Suite") categorized.marketingTools.push(s.name);
+              else categorized.productivity.push(s.name);
+            } else if (s.category === "Business & Professional Skills") categorized.business.push(s.name);
+          });
+          setSanitySkills(categorized);
+        }
+      })
+      .catch((err) => console.warn("Sanity fetch skills fallback:", err));
+  }, []);
+
+  const currentDataSkills = sanitySkills?.dataAnalysis?.length ? sanitySkills.dataAnalysis : dataAnalysisSkills;
+  const currentDataTools = sanitySkills?.dataTools?.length ? sanitySkills.dataTools : dataAnalysisTools;
+  const currentMarketingSkills = sanitySkills?.marketing?.length ? sanitySkills.marketing : digitalMarketingSkills;
+  const currentMarketingTools = sanitySkills?.marketingTools?.length ? sanitySkills.marketingTools : digitalMarketingTools;
+  const currentProductivityTools = sanitySkills?.productivity?.length ? sanitySkills.productivity : productivityTools;
+  const currentBusinessSkills = sanitySkills?.business?.length ? sanitySkills.business : businessSkills;
 
   const tabs = [
     { id: "data", label: "Data Analysis", icon: <BarChart2 size={18} /> },
@@ -197,7 +236,7 @@ const Skills = ({ darkMode }) => {
                       Skills
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {dataAnalysisSkills.map((s, i) => (
+                      {currentDataSkills.map((s, i) => (
                         <SkillTag key={i} label={s} />
                       ))}
                     </div>
@@ -211,7 +250,7 @@ const Skills = ({ darkMode }) => {
                       🛠 Tools
                     </h3>
                     <div className="flex flex-col gap-2">
-                      {dataAnalysisTools.map((t, i) => (
+                      {currentDataTools.map((t, i) => (
                         <ToolBadge key={i} label={t} />
                       ))}
                     </div>
@@ -248,7 +287,7 @@ const Skills = ({ darkMode }) => {
                       Skills
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {digitalMarketingSkills.map((s, i) => (
+                      {currentMarketingSkills.map((s, i) => (
                         <SkillTag key={i} label={s} />
                       ))}
                     </div>
@@ -262,7 +301,7 @@ const Skills = ({ darkMode }) => {
                       🛠 Tools
                     </h3>
                     <div className="flex flex-col gap-2">
-                      {[...digitalMarketingTools, ...productivityTools].map((t, i) => (
+                      {[...currentMarketingTools, ...currentProductivityTools].map((t, i) => (
                         <ToolBadge key={i} label={t} />
                       ))}
                     </div>
@@ -296,7 +335,7 @@ const Skills = ({ darkMode }) => {
               Business &amp; Professional Skills
             </h3>
             <div className="flex flex-wrap gap-2">
-              {businessSkills.map((s, i) => (
+              {currentBusinessSkills.map((s, i) => (
                 <SkillTag key={i} label={s} />
               ))}
             </div>
