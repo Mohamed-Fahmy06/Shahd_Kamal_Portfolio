@@ -13,25 +13,25 @@ const Contact = ({ darkMode }) => {
     setResult("Sending....");
     const formData = new FormData(event.target);
 
-    formData.append("access_key", "0760489b-11a8-49c6-ad9d-1bd21e15d93e");
-
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      const response = await fetch("https://formspree.io/f/xqpqelgw", {
         method: "POST",
         body: formData,
+        headers: {
+          Accept: "application/json",
+        },
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        setResult("Message Sent Successfully!");
+      if (response.ok) {
+        setResult("Message Sent Successfully! Shahd will get back to you soon.");
         event.target.reset();
-        setTimeout(() => setResult(""), 5000);
+        setTimeout(() => setResult(""), 6000);
       } else {
-        setResult(data.message || "Failed to send message.");
+        const data = await response.json().catch(() => ({}));
+        setResult(data.error || "Failed to send message. Please try again.");
       }
     } catch {
-      setResult("Something went wrong. Please reach out via WhatsApp or LinkedIn.");
+      setResult("Something went wrong. Please reach out directly via WhatsApp or LinkedIn.");
     }
     setIsSubmitting(false);
   };

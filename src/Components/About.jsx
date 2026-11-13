@@ -1,7 +1,10 @@
 import shahdPhoto from "../assets/shahd_photo.jpg";
 import { GraduationCap, Briefcase, Layout } from "lucide-react";
+import { usePortfolio } from "../context/PortfolioContext";
 
 const About = ({ darkMode }) => {
+  const { profile } = usePortfolio();
+
   return (
     <section
       id="About"
@@ -27,8 +30,8 @@ const About = ({ darkMode }) => {
               data-aos-delay="700"
             />
             <img
-              src={shahdPhoto}
-              alt="Shahd Kamal"
+              src={profile.avatar || shahdPhoto}
+              alt={profile.name || "Shahd Kamal"}
               className="relative w-full h-auto object-cover rounded-3xl z-10 border-2 border-rose-400/30 shadow-2xl transition-all duration-500 hover:scale-102"
               data-aos="zoom-in"
               data-aos-delay="400"
@@ -48,7 +51,7 @@ const About = ({ darkMode }) => {
               data-aos="fade-up"
               data-aos-delay="350"
             >
-              <span className="w-8 h-0.5 bg-rose-500"></span>
+              <span className="w-8 h-0.5 bg-rose-500" />
               <span className="text-rose-500 font-semibold uppercase tracking-wider text-xs sm:text-sm">
                 Get to know me
               </span>
@@ -71,25 +74,38 @@ const About = ({ darkMode }) => {
             data-aos-delay="500"
           >
             <p className="font-extrabold text-xl sm:text-2xl text-rose-500">
-              Beyond Numbers. Beyond Creativity.
+              {profile.aboutHeadline || "Beyond Numbers. Beyond Creativity."}
             </p>
             <p>
-              I'm <span className="text-rose-500 font-semibold italic">Shahd Kamal</span>, a results-oriented professional passionate about the intersection of business, data, and digital growth innovation.
+              {profile.aboutIntro || (
+                <>
+                  I'm <span className="text-rose-500 font-semibold italic">{profile.name || "Shahd Kamal"}</span>, a results-oriented professional passionate about the intersection of business, data, and digital growth innovation.
+                </>
+              )}
             </p>
             <p>I bring together two powerful disciplines that shape the way businesses grow and make decisions:</p>
             <p>
-              <span className="text-rose-500 font-semibold">Data Analysis:</span> Turning complex datasets into meaningful insights, uncovering hidden patterns, and translating numbers into strategic decisions. I focus on making data understandable, actionable, and valuable through analytical thinking and data visualization.
+              <span className="text-rose-500 font-semibold">Data Analysis:</span>{" "}
+              {profile.aboutDataAnalysis ||
+                "Turning complex datasets into meaningful insights, uncovering hidden patterns, and translating numbers into strategic decisions. I focus on making data understandable, actionable, and valuable through analytical thinking and data visualization."}
             </p>
             <p>
-              <span className="text-rose-500 font-semibold">Digital Marketing:</span> Combining creativity with strategic thinking to build engaging digital experiences, strengthen brand presence, understand audience behavior, and create content that connects brands with people.
+              <span className="text-rose-500 font-semibold">Digital Marketing:</span>{" "}
+              {profile.aboutDigitalMarketing ||
+                "Combining creativity with strategic thinking to build engaging digital experiences, strengthen brand presence, understand audience behavior, and create content that connects brands with people."}
             </p>
             <p className="italic">
-              I believe that successful businesses need more than data and more than creativity — they need the ability to connect both. My approach is simple: <span className="font-semibold text-rose-400">Analyze with purpose, create with strategy, and deliver with impact.</span>
+              {profile.aboutConclusion || (
+                <>
+                  I believe that successful businesses need more than data and more than creativity — they need the ability to connect both. My approach is simple:{" "}
+                  <span className="font-semibold text-rose-400">Analyze with purpose, create with strategy, and deliver with impact.</span>
+                </>
+              )}
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-8">
-            {/* 2 Disciplines */}
+            {/* Disciplines */}
             <div
               className={`p-4 rounded-2xl transition-all duration-300 hover:-translate-y-1.5 shadow-md
               ${darkMode ? "bg-white/5 border border-white/10" : "bg-rose-50/80 border border-rose-100"}`}
@@ -100,7 +116,7 @@ const About = ({ darkMode }) => {
                 <GraduationCap size={24} />
               </div>
               <div className="text-xl sm:text-2xl font-bold text-rose-500">
-                2
+                {profile.disciplinesCount || "2"}
               </div>
               <div
                 className={`text-[10px] sm:text-xs font-medium uppercase tracking-tighter
@@ -121,7 +137,7 @@ const About = ({ darkMode }) => {
                 <Briefcase size={24} />
               </div>
               <div className="text-xl sm:text-2xl font-bold text-rose-500">
-                1+
+                {profile.yearsExperience || "1+"}
               </div>
               <div
                 className={`text-[10px] sm:text-xs font-medium uppercase tracking-tighter
@@ -148,7 +164,7 @@ const About = ({ darkMode }) => {
                 className={`text-[10px] sm:text-xs font-medium uppercase tracking-tighter
                 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
               >
-                Stage 2
+                {profile.cfaStage || "Stage 2"}
               </div>
             </div>
           </div>

@@ -15,6 +15,7 @@ import {
 import { client } from "../sanity/client";
 import { urlForImage } from "../sanity/image";
 import { PROJECTS_QUERY } from "../sanity/queries";
+import { usePortfolio } from "../context/PortfolioContext";
 
 import orascomImg from "../assets/projects/orascom-dashboard.jpg";
 import magdiYacoubImg from "../assets/projects/magdi-yacoub-dashboard.jpg";
@@ -166,7 +167,8 @@ const Projects = ({ darkMode }) => {
       .catch((err) => console.warn("Sanity fetch projects fallback:", err));
   }, []);
 
-  const currentProjects = sanityProjects || projectsList;
+  const { projects: contextProjects, stats } = usePortfolio();
+  const currentProjects = contextProjects && contextProjects.length > 0 ? contextProjects : (sanityProjects || projectsList);
 
   const categories = [
     { id: "all", label: "All Dashboards", count: currentProjects.length },
@@ -228,7 +230,7 @@ const Projects = ({ darkMode }) => {
           </p>
         </div>
 
-        {/* Executive KPI Overview Strip */}
+        {/* Executive KPI Overview Strip - Dynamically Synchronized */}
         <div
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
           data-aos="fade-up"
@@ -237,19 +239,19 @@ const Projects = ({ darkMode }) => {
           {[
             {
               label: "Analytical Dashboards",
-              value: "5+",
+              value: stats.analyticalDashboardsCount,
               icon: <BarChart3 className="text-rose-500" size={22} />,
               detail: "Power BI & Excel",
             },
             {
               label: "Industry Domains",
-              value: "3",
+              value: stats.industryDomainsCount,
               icon: <Layers className="text-rose-500" size={22} />,
               detail: "Finance, Health, Telecom",
             },
             {
               label: "KPIs Modeled",
-              value: "35+",
+              value: stats.kpisCount,
               icon: <TrendingUp className="text-rose-500" size={22} />,
               detail: "Profit, Liquidity, Care",
             },

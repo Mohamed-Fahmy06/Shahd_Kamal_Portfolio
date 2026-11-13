@@ -87,7 +87,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
             className="flex items-center space-x-2"
           >
             <span className={`text-xl font-bold ${colors.textPrimary}`}>
-              Portfolio
+              Shahd Kamal
               <span className="text-rose-500">.</span>
             </span>
           </motion.a>

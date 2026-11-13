@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BarChart2, Megaphone, Briefcase } from "lucide-react";
 import { client } from "../sanity/client";
 import { SKILLS_QUERY } from "../sanity/queries";
+import { usePortfolio } from "../context/PortfolioContext";
 
 const Skills = ({ darkMode }) => {
   const [activeTab, setActiveTab] = useState("data");
@@ -81,12 +82,49 @@ const Skills = ({ darkMode }) => {
       .catch((err) => console.warn("Sanity fetch skills fallback:", err));
   }, []);
 
-  const currentDataSkills = sanitySkills?.dataAnalysis?.length ? sanitySkills.dataAnalysis : dataAnalysisSkills;
-  const currentDataTools = sanitySkills?.dataTools?.length ? sanitySkills.dataTools : dataAnalysisTools;
-  const currentMarketingSkills = sanitySkills?.marketing?.length ? sanitySkills.marketing : digitalMarketingSkills;
-  const currentMarketingTools = sanitySkills?.marketingTools?.length ? sanitySkills.marketingTools : digitalMarketingTools;
-  const currentProductivityTools = sanitySkills?.productivity?.length ? sanitySkills.productivity : productivityTools;
-  const currentBusinessSkills = sanitySkills?.business?.length ? sanitySkills.business : businessSkills;
+  const { skills: contextSkills } = usePortfolio();
+
+  const currentDataSkills =
+    contextSkills?.dataAnalysisSkills?.length
+      ? contextSkills.dataAnalysisSkills
+      : sanitySkills?.dataAnalysis?.length
+      ? sanitySkills.dataAnalysis
+      : dataAnalysisSkills;
+
+  const currentDataTools =
+    contextSkills?.dataAnalysisTools?.length
+      ? contextSkills.dataAnalysisTools
+      : sanitySkills?.dataTools?.length
+      ? sanitySkills.dataTools
+      : dataAnalysisTools;
+
+  const currentMarketingSkills =
+    contextSkills?.digitalMarketingSkills?.length
+      ? contextSkills.digitalMarketingSkills
+      : sanitySkills?.marketing?.length
+      ? sanitySkills.marketing
+      : digitalMarketingSkills;
+
+  const currentMarketingTools =
+    contextSkills?.digitalMarketingTools?.length
+      ? contextSkills.digitalMarketingTools
+      : sanitySkills?.marketingTools?.length
+      ? sanitySkills.marketingTools
+      : digitalMarketingTools;
+
+  const currentProductivityTools =
+    contextSkills?.productivityTools?.length
+      ? contextSkills.productivityTools
+      : sanitySkills?.productivity?.length
+      ? sanitySkills.productivity
+      : productivityTools;
+
+  const currentBusinessSkills =
+    contextSkills?.businessSkills?.length
+      ? contextSkills.businessSkills
+      : sanitySkills?.business?.length
+      ? sanitySkills.business
+      : businessSkills;
 
   const tabs = [
     { id: "data", label: "Data Analysis", icon: <BarChart2 size={18} /> },

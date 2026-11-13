@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, TrendingUp, GraduationCap, Award, CheckCircle2, Calendar, Building2 } from "lucide-react";
 import { client } from "../sanity/client";
 import { EXPERIENCES_QUERY } from "../sanity/queries";
+import { usePortfolio } from "../context/PortfolioContext";
 
 const Experience = ({ darkMode }) => {
   const [activeTab, setActiveTab] = useState("cfa");
@@ -57,40 +58,22 @@ const Experience = ({ darkMode }) => {
     },
   };
 
-  const tabs = [
-    { id: "cfa", label: "Financial & Data Analyst", icon: <TrendingUp size={18} /> },
-    { id: "trainer", label: "Finance Trainer", icon: <GraduationCap size={18} /> },
-  ];
+  const { experiences: contextExperiences } = usePortfolio();
 
-  const [sanityExperiences, setSanityExperiences] = useState(null);
+  const currentExpList =
+    Array.isArray(contextExperiences) && contextExperiences.length > 0
+      ? contextExperiences
+      : [experiences.cfa, experiences.trainer];
 
-  useEffect(() => {
-    client
-      .fetch(EXPERIENCES_QUERY)
-      .then((data) => {
-        if (data && data.length > 0) {
-          const map = {};
-          data.forEach((item, idx) => {
-            const key = idx === 0 ? "cfa" : "trainer";
-            map[key] = {
-              number: item.number || (idx === 0 ? "01" : "02"),
-              category: item.category,
-              title: item.title,
-              role: item.role,
-              period: item.period,
-              organization: idx === 0 ? "CFA Institute Research Challenge" : "National Egyptian E-Learning University",
-              badge: item.badge,
-              bullets: item.bullets || [],
-              skills: item.highlights || [],
-            };
-          });
-          setSanityExperiences(map);
-        }
-      })
-      .catch((err) => console.warn("Sanity fetch experiences fallback:", err));
-  }, []);
+  const tabs = currentExpList.map((exp, idx) => ({
+    id: exp.id || (idx === 0 ? "cfa" : "trainer"),
+    label: exp.role || exp.title,
+    icon: idx === 0 ? <TrendingUp size={18} /> : <GraduationCap size={18} />,
+  }));
 
-  const activeExp = (sanityExperiences || experiences)[activeTab];
+  const activeExp =
+    currentExpList.find((e) => (e.id || (currentExpList.indexOf(e) === 0 ? "cfa" : "trainer")) === activeTab) ||
+    currentExpList[0];
 
   return (
     <section
