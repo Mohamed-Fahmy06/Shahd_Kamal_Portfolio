@@ -123,6 +123,7 @@ const AdminDashboard = ({ darkMode }) => {
     const handleHash = () => {
       if (window.location.hash === "#admin") {
         setIsOpen(true);
+        setResetRequests(getStoredResetRequests());
       } else {
         setIsOpen(false);
       }
@@ -132,13 +133,6 @@ const AdminDashboard = ({ darkMode }) => {
     window.addEventListener("hashchange", handleHash);
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
-
-  // Sync reset requests on open
-  useEffect(() => {
-    if (isOpen) {
-      setResetRequests(getStoredResetRequests());
-    }
-  }, [isOpen]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -326,7 +320,7 @@ const AdminDashboard = ({ darkMode }) => {
       const dataUrl = await readFileAsDataURL(file);
       setProfile((prev) => ({ ...prev, avatar: dataUrl }));
       showToast("📸 Hero photo uploaded successfully!");
-    } catch (err) {
+    } catch {
       alert("Failed to read image file. Please try again.");
     }
   };
@@ -339,7 +333,7 @@ const AdminDashboard = ({ darkMode }) => {
       const dataUrl = await readFileAsDataURL(file);
       setProfile((prev) => ({ ...prev, aboutImage: dataUrl }));
       showToast("🖼️ About section photo uploaded successfully!");
-    } catch (err) {
+    } catch {
       alert("Failed to read image file. Please try again.");
     }
   };
@@ -352,7 +346,7 @@ const AdminDashboard = ({ darkMode }) => {
       const dataUrl = await readFileAsDataURL(file);
       setProfile((prev) => ({ ...prev, contactImage: dataUrl }));
       showToast("📞 Contact photo uploaded successfully!");
-    } catch (err) {
+    } catch {
       alert("Failed to read image file. Please try again.");
     }
   };
@@ -369,7 +363,7 @@ const AdminDashboard = ({ darkMode }) => {
         cvUrl: file.name || "Shahd_Kamal_CV.pdf",
       }));
       showToast(`📄 CV (${file.name}) uploaded & linked successfully!`);
-    } catch (err) {
+    } catch {
       alert("Failed to read CV file. Please try again.");
     }
   };

@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BarChart2, Megaphone, Briefcase } from "lucide-react";
+import {
+  Sparkles,
+  BarChart3,
+  Layers,
+  TrendingUp,
+  Activity,
+  LayoutGrid,
+  Table as TableIcon,
+  Eye,
+  X,
+  CheckCircle2,
+} from "lucide-react";
 import { usePortfolio } from "../context/PortfolioContext";
 
 

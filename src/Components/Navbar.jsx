@@ -3,18 +3,19 @@ import { useState, useEffect } from "react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 
 
+const navItems = [
+  { name: 'Home', link: '#Home' },
+  { name: 'About', link: '#About' },
+  { name: 'Experience', link: '#Experience' },
+  { name: 'Skills', link: '#Skills' },
+  { name: 'Projects', link: '#Projects' },
+  { name: 'Contact', link: '#Contact' }
+];
+
 const Navbar = ({ darkMode, toggleDarkMode }) => {
 
   const [activeSection, setActiveSection] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navItems = [
-    { name: 'Home', link: '#Home' },
-    { name: 'About', link: '#About' },
-    { name: 'Experience', link: '#Experience' },
-    { name: 'Skills', link: '#Skills' },
-    { name: 'Projects', link: '#Projects' },
-    { name: 'Contact', link: '#Contact' }
-  ];
 
   const lightColors = {
     navBg: 'bg-linear-to-br from-rose-100/90 to-white/95',
