@@ -1,21 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  BarChart3,
-  TrendingUp,
-  Activity,
-  Layers,
-  Eye,
-  X,
-  CheckCircle2,
-  Table as TableIcon,
-  LayoutGrid,
-  Sparkles,
-} from "lucide-react";
-import { client } from "../sanity/client";
-import { urlForImage } from "../sanity/image";
-import { PROJECTS_QUERY } from "../sanity/queries";
+import { BarChart2, Megaphone, Briefcase } from "lucide-react";
 import { usePortfolio } from "../context/PortfolioContext";
+
+
 
 import orascomImg from "../assets/projects/orascom-dashboard.jpg";
 import magdiYacoubImg from "../assets/projects/magdi-yacoub-dashboard.jpg";
@@ -134,41 +122,9 @@ const Projects = ({ darkMode }) => {
     },
   ];
 
-  const [sanityProjects, setSanityProjects] = useState(null);
-
-  useEffect(() => {
-    client
-      .fetch(PROJECTS_QUERY)
-      .then((data) => {
-        if (data && data.length > 0) {
-          const mapped = data.map((item, idx) => ({
-            id: item._id || idx + 1,
-            title: item.title,
-            category: item.category?.toLowerCase().includes("financial")
-              ? "financial"
-              : item.category?.toLowerCase().includes("health")
-              ? "healthcare"
-              : "business",
-            categoryLabel: item.category || "Financial Analysis",
-            des: item.summary,
-            longDes: item.description,
-            image: item.mainImage?.asset
-              ? urlForImage(item.mainImage).width(1600).url()
-              : (idx === 0 ? orascomImg : idx === 1 ? magdiYacoubImg : covidImg),
-            alt: item.title,
-            kpis: item.kpis || [],
-            tags: item.technologies || [],
-            status: "Completed",
-            impact: item.summary,
-          }));
-          setSanityProjects(mapped);
-        }
-      })
-      .catch((err) => console.warn("Sanity fetch projects fallback:", err));
-  }, []);
 
   const { projects: contextProjects, stats } = usePortfolio();
-  const currentProjects = contextProjects && contextProjects.length > 0 ? contextProjects : (sanityProjects || projectsList);
+  const currentProjects = contextProjects && contextProjects.length > 0 ? contextProjects : projectsList;
 
   const categories = [
     { id: "all", label: "All Dashboards", count: currentProjects.length },
@@ -422,6 +378,9 @@ const Projects = ({ darkMode }) => {
                     <img
                       src={project.image}
                       alt={project.alt}
+                      width="600"
+                      height="350"
+                      loading="lazy"
                       className="w-full h-full object-cover object-top transition-transform duration-700 group-hover/img:scale-110"
                     />
                     <div className="absolute top-3 left-3 z-20">
@@ -710,6 +669,9 @@ const Projects = ({ darkMode }) => {
                   <img
                     src={selectedProject.image}
                     alt={selectedProject.alt}
+                    width="800"
+                    height="420"
+                    loading="lazy"
                     className="w-full max-h-105 object-cover object-top"
                   />
                 </div>

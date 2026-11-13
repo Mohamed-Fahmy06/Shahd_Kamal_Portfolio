@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart2, Megaphone, Briefcase } from "lucide-react";
-import { client } from "../sanity/client";
-import { SKILLS_QUERY } from "../sanity/queries";
 import { usePortfolio } from "../context/PortfolioContext";
+
 
 const Skills = ({ darkMode }) => {
   const [activeTab, setActiveTab] = useState("data");
@@ -52,78 +51,36 @@ const Skills = ({ darkMode }) => {
     "Time Management",
   ];
 
-  const [sanitySkills, setSanitySkills] = useState(null);
-
-  useEffect(() => {
-    client
-      .fetch(SKILLS_QUERY)
-      .then((data) => {
-        if (data && data.length > 0) {
-          const categorized = {
-            dataAnalysis: [],
-            dataTools: [],
-            marketing: [],
-            marketingTools: [],
-            productivity: [],
-            business: [],
-          };
-          data.forEach((s) => {
-            if (s.category === "Data Analysis & Financial Research") categorized.dataAnalysis.push(s.name);
-            else if (s.category === "Data Analysis Tools") categorized.dataTools.push(s.name);
-            else if (s.category === "Digital Marketing") categorized.marketing.push(s.name);
-            else if (s.category === "Productivity & Presentation") {
-              if (s.name === "Canva" || s.name === "Meta Business Suite") categorized.marketingTools.push(s.name);
-              else categorized.productivity.push(s.name);
-            } else if (s.category === "Business & Professional Skills") categorized.business.push(s.name);
-          });
-          setSanitySkills(categorized);
-        }
-      })
-      .catch((err) => console.warn("Sanity fetch skills fallback:", err));
-  }, []);
-
   const { skills: contextSkills } = usePortfolio();
 
   const currentDataSkills =
     contextSkills?.dataAnalysisSkills?.length
       ? contextSkills.dataAnalysisSkills
-      : sanitySkills?.dataAnalysis?.length
-      ? sanitySkills.dataAnalysis
       : dataAnalysisSkills;
 
   const currentDataTools =
     contextSkills?.dataAnalysisTools?.length
       ? contextSkills.dataAnalysisTools
-      : sanitySkills?.dataTools?.length
-      ? sanitySkills.dataTools
       : dataAnalysisTools;
 
   const currentMarketingSkills =
     contextSkills?.digitalMarketingSkills?.length
       ? contextSkills.digitalMarketingSkills
-      : sanitySkills?.marketing?.length
-      ? sanitySkills.marketing
       : digitalMarketingSkills;
 
   const currentMarketingTools =
     contextSkills?.digitalMarketingTools?.length
       ? contextSkills.digitalMarketingTools
-      : sanitySkills?.marketingTools?.length
-      ? sanitySkills.marketingTools
       : digitalMarketingTools;
 
   const currentProductivityTools =
     contextSkills?.productivityTools?.length
       ? contextSkills.productivityTools
-      : sanitySkills?.productivity?.length
-      ? sanitySkills.productivity
       : productivityTools;
 
   const currentBusinessSkills =
     contextSkills?.businessSkills?.length
       ? contextSkills.businessSkills
-      : sanitySkills?.business?.length
-      ? sanitySkills.business
       : businessSkills;
 
   const tabs = [
@@ -176,7 +133,7 @@ const Skills = ({ darkMode }) => {
       <div className="container px-4 sm:px-8 lg:px-14 mx-auto">
         {/* Section Header */}
         <div className="text-center mb-14" data-aos="fade-up">
-          <h1
+          <h2
             className="sm:text-4xl text-3xl font-bold title-font mb-4"
             style={{ color: darkMode ? "white" : "#1f2937" }}
           >
@@ -191,7 +148,7 @@ const Skills = ({ darkMode }) => {
             >
               Skills
             </span>
-          </h1>
+          </h2>
           <p
             className="max-w-2xl mx-auto leading-relaxed text-base sm:text-lg"
             style={{ color: darkMode ? "#d1d5db" : "#6b7280" }}

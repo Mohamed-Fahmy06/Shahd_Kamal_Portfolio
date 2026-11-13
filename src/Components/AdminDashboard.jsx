@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Lock,
+  Unlock,
+  Key,
   LogOut,
   Save,
   RotateCcw,
@@ -19,27 +21,89 @@ import {
   Wrench,
   Sparkles,
   FileText,
+  Upload,
+  Image as ImageIcon,
+  ShieldCheck,
+  Mail,
+  Phone,
+  Check,
 } from "lucide-react";
 import { usePortfolio } from "../context/PortfolioContext";
+import { readFileAsDataURL } from "../utils/fileUpload";
+import defaultShahdPhoto from "../assets/shahd_photo2.jpg";
 
 const AUTH_STORAGE_KEY = "shahd_portfolio_admin_auth";
-const ADMIN_EMAILS = ["shahdkamal@gmail.com", "shahd@gmail.com", "mohamedfahmy1757@gmail.com"];
-const ADMIN_PASSWORD = "shahd2026";
+const CURRENT_USER_KEY = "shahd_portfolio_admin_current_user";
+const ADMIN_PASSWORDS_KEY = "shahd_portfolio_admin_passwords";
+const PASSWORD_RESET_REQUESTS_KEY = "shahd_portfolio_password_reset_requests";
+
+const SHAHD_EMAIL = "kamalshahd574@gmail.com";
+const MOHAMED_EMAIL = "mohamedfahmy1757@gmail.com";
+const MOHAMED_DEFAULT_PASS = "Moofahmy1046";
+
+// Helpers for localStorage password management
+const getStoredPasswords = () => {
+  try {
+    const raw = localStorage.getItem(ADMIN_PASSWORDS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+};
+
+const setStoredPasswords = (map) => {
+  try {
+    localStorage.setItem(ADMIN_PASSWORDS_KEY, JSON.stringify(map));
+  } catch (e) {
+    console.warn("Could not save admin passwords", e);
+  }
+};
+
+const getStoredResetRequests = () => {
+  try {
+    const raw = localStorage.getItem(PASSWORD_RESET_REQUESTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+const setStoredResetRequests = (requests) => {
+  try {
+    localStorage.setItem(PASSWORD_RESET_REQUESTS_KEY, JSON.stringify(requests));
+  } catch (e) {
+    console.warn("Could not save password reset requests", e);
+  }
+};
 
 const AdminDashboard = ({ darkMode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem(AUTH_STORAGE_KEY) === "true";
   });
+  const [currentAdminEmail, setCurrentAdminEmail] = useState(() => {
+    return localStorage.getItem(CURRENT_USER_KEY) || "";
+  });
 
   // Login form state
-  const [emailInput, setEmailInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [loginSuccess, setLoginSuccess] = useState("");
+
+  // Forgot password flow state: "login" | "forgot" | "resetting"
+  const [authView, setAuthView] = useState("login");
+  const [forgotEmail, setForgotEmail] = useState(SHAHD_EMAIL);
+  const [newResetPassword, setNewResetPassword] = useState("");
+  const [confirmResetPassword, setConfirmResetPassword] = useState("");
 
   // Active admin tab
   const [activeTab, setActiveTab] = useState("hero");
   const [saveToast, setSaveToast] = useState("");
+
+  // Pending requests state (live)
+  const [resetRequests, setResetRequests] = useState(getStoredResetRequests);
 
   const {
     profile,
@@ -69,6 +133,13 @@ const AdminDashboard = ({ darkMode }) => {
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
+  // Sync reset requests on open
+  useEffect(() => {
+    if (isOpen) {
+      setResetRequests(getStoredResetRequests());
+    }
+  }, [isOpen]);
+
   const handleClose = () => {
     setIsOpen(false);
     if (window.location.hash === "#admin") {
@@ -76,31 +147,231 @@ const AdminDashboard = ({ darkMode }) => {
     }
   };
 
+  const showToast = (msg) => {
+    setSaveToast(msg);
+    setTimeout(() => setSaveToast(""), 3500);
+  };
+
+  // Check if Shahd has set her initial password
+  const storedPasswords = getStoredPasswords();
+  const isShahdFirstTime = !storedPasswords[SHAHD_EMAIL];
+
   const handleLogin = (e) => {
     e.preventDefault();
-    const cleanEmail = emailInput.trim().toLowerCase();
-    if (
-      ADMIN_EMAILS.includes(cleanEmail) &&
-      passwordInput.trim() === ADMIN_PASSWORD
-    ) {
+    setLoginError("");
+    setLoginSuccess("");
+
+    const cleanEmail = loginEmail.trim().toLowerCase();
+
+    if (cleanEmail !== SHAHD_EMAIL && cleanEmail !== MOHAMED_EMAIL) {
+      setLoginError("Unauthorized Gmail. Only Shahd Kamal and Mohamed Fahmy are permitted.");
+      return;
+    }
+
+    const passwords = getStoredPasswords();
+
+    // Shahd First-Time Password Setup
+    if (cleanEmail === SHAHD_EMAIL && !passwords[SHAHD_EMAIL]) {
+      if (!loginPassword.trim() || loginPassword.length < 6) {
+        setLoginError("Please create a password with at least 6 characters.");
+        return;
+      }
+      if (loginPassword !== confirmPassword) {
+        setLoginError("Passwords do not match. Please re-enter.");
+        return;
+      }
+
+      // Save Shahd's chosen password
+      const updated = { ...passwords, [SHAHD_EMAIL]: loginPassword.trim() };
+      setStoredPasswords(updated);
+
       setIsAuthenticated(true);
+      setCurrentAdminEmail(cleanEmail);
       localStorage.setItem(AUTH_STORAGE_KEY, "true");
+      localStorage.setItem(CURRENT_USER_KEY, cleanEmail);
+      showToast("🎉 Welcome Shahd! Your password has been set successfully.");
+      return;
+    }
+
+    // Existing Password Check
+    let expectedPassword = passwords[cleanEmail];
+    if (!expectedPassword && cleanEmail === MOHAMED_EMAIL) {
+      expectedPassword = MOHAMED_DEFAULT_PASS;
+    }
+
+    if (loginPassword.trim() === expectedPassword) {
+      setIsAuthenticated(true);
+      setCurrentAdminEmail(cleanEmail);
+      localStorage.setItem(AUTH_STORAGE_KEY, "true");
+      localStorage.setItem(CURRENT_USER_KEY, cleanEmail);
       setLoginError("");
     } else {
-      setLoginError("Invalid Gmail address or Password. Access is restricted to Shahd Kamal.");
+      setLoginError("Invalid password. If you forgot your password, use the 'Forgot password?' option below.");
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setCurrentAdminEmail("");
     localStorage.removeItem(AUTH_STORAGE_KEY);
-    setEmailInput("");
-    setPasswordInput("");
+    localStorage.removeItem(CURRENT_USER_KEY);
+    setLoginEmail("");
+    setLoginPassword("");
+    setConfirmPassword("");
+    setAuthView("login");
   };
 
-  const showToast = (msg) => {
-    setSaveToast(msg);
-    setTimeout(() => setSaveToast(""), 3500);
+  // --- Password Reset Request Logic ---
+  const handleSendResetRequest = (e) => {
+    e.preventDefault();
+    const cleanEmail = forgotEmail.trim().toLowerCase();
+
+    if (cleanEmail !== SHAHD_EMAIL && cleanEmail !== MOHAMED_EMAIL) {
+      setLoginError("Email not recognized as an admin account.");
+      return;
+    }
+
+    const targetEmail = cleanEmail === SHAHD_EMAIL ? MOHAMED_EMAIL : SHAHD_EMAIL;
+    const targetName = cleanEmail === SHAHD_EMAIL ? "Mohamed Fahmy" : "Shahd Kamal";
+    const requesterName = cleanEmail === SHAHD_EMAIL ? "Shahd Kamal" : "Mohamed Fahmy";
+
+    const currentRequests = getStoredResetRequests();
+    // Remove any previous requests for this email
+    const filtered = currentRequests.filter((r) => r.requesterEmail !== cleanEmail);
+
+    const newReq = {
+      id: `req_${Date.now()}`,
+      requesterEmail: cleanEmail,
+      requesterName,
+      targetEmail,
+      targetName,
+      status: "pending",
+      createdAt: Date.now(),
+    };
+
+    const updated = [...filtered, newReq];
+    setStoredResetRequests(updated);
+    setResetRequests(updated);
+
+    setLoginSuccess(`Password reset request sent to ${targetName} (${targetEmail}). Once they log in and approve your request, you can change your password.`);
+    setLoginError("");
+  };
+
+  // Check if there is an approved reset request for the selected email
+  const activeApprovedRequest = resetRequests.find(
+    (r) => r.requesterEmail === forgotEmail.trim().toLowerCase() && r.status === "approved"
+  );
+
+  const activePendingRequest = resetRequests.find(
+    (r) => r.requesterEmail === forgotEmail.trim().toLowerCase() && r.status === "pending"
+  );
+
+  const handleApplyNewPassword = (e) => {
+    e.preventDefault();
+    if (!newResetPassword.trim() || newResetPassword.length < 6) {
+      setLoginError("New password must be at least 6 characters.");
+      return;
+    }
+    if (newResetPassword !== confirmResetPassword) {
+      setLoginError("Passwords do not match.");
+      return;
+    }
+
+    const cleanEmail = forgotEmail.trim().toLowerCase();
+    const passwords = getStoredPasswords();
+    passwords[cleanEmail] = newResetPassword.trim();
+    setStoredPasswords(passwords);
+
+    // Remove the fulfilled reset request
+    const remaining = resetRequests.filter((r) => r.requesterEmail !== cleanEmail);
+    setStoredResetRequests(remaining);
+    setResetRequests(remaining);
+
+    setNewResetPassword("");
+    setConfirmResetPassword("");
+    setAuthView("login");
+    setLoginEmail(cleanEmail);
+    setLoginPassword(newResetPassword.trim());
+    setLoginSuccess("✅ Password changed successfully! You can now log in.");
+    setLoginError("");
+  };
+
+  const handleApproveReset = (requestId) => {
+    const updated = resetRequests.map((r) =>
+      r.id === requestId ? { ...r, status: "approved" } : r
+    );
+    setStoredResetRequests(updated);
+    setResetRequests(updated);
+    showToast("✅ Reset request approved! The requester can now set a new password.");
+  };
+
+  const handleRejectReset = (requestId) => {
+    const updated = resetRequests.filter((r) => r.id !== requestId);
+    setStoredResetRequests(updated);
+    setResetRequests(updated);
+    showToast("❌ Reset request rejected.");
+  };
+
+  // Filter requests waiting for the currently logged-in admin's approval
+  const pendingRequestsForMe = resetRequests.filter(
+    (r) => r.targetEmail === currentAdminEmail && r.status === "pending"
+  );
+
+  // --- File Upload Handlers (from PC or Phone) ---
+  const handleAvatarFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      showToast("Optimizing & uploading image...");
+      const dataUrl = await readFileAsDataURL(file);
+      setProfile((prev) => ({ ...prev, avatar: dataUrl }));
+      showToast("📸 Hero photo uploaded successfully!");
+    } catch (err) {
+      alert("Failed to read image file. Please try again.");
+    }
+  };
+
+  const handleAboutImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      showToast("Optimizing & uploading image...");
+      const dataUrl = await readFileAsDataURL(file);
+      setProfile((prev) => ({ ...prev, aboutImage: dataUrl }));
+      showToast("🖼️ About section photo uploaded successfully!");
+    } catch (err) {
+      alert("Failed to read image file. Please try again.");
+    }
+  };
+
+  const handleContactImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      showToast("Optimizing & uploading image...");
+      const dataUrl = await readFileAsDataURL(file);
+      setProfile((prev) => ({ ...prev, contactImage: dataUrl }));
+      showToast("📞 Contact photo uploaded successfully!");
+    } catch (err) {
+      alert("Failed to read image file. Please try again.");
+    }
+  };
+
+  const handleCvFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      showToast("Processing CV file...");
+      const dataUrl = await readFileAsDataURL(file);
+      setProfile((prev) => ({
+        ...prev,
+        cvFile: dataUrl,
+        cvUrl: file.name || "Shahd_Kamal_CV.pdf",
+      }));
+      showToast(`📄 CV (${file.name}) uploaded & linked successfully!`);
+    } catch (err) {
+      alert("Failed to read CV file. Please try again.");
+    }
   };
 
   // --- Project Management ---
@@ -118,6 +389,18 @@ const AdminDashboard = ({ darkMode }) => {
     liveUrl: "",
     impact: "",
   });
+
+  const handleProjectImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      setProjectForm((prev) => ({ ...prev, image: dataUrl }));
+      showToast("Dashboard screenshot uploaded!");
+    } catch {
+      alert("Could not load image file.");
+    }
+  };
 
   const handleStartEditProject = (proj) => {
     setEditingProject(proj.id);
@@ -154,7 +437,9 @@ const AdminDashboard = ({ darkMode }) => {
           : "Business Intelligence",
       des: projectForm.des,
       longDes: projectForm.longDes,
-      image: projectForm.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2340&auto=format&fit=crop",
+      image:
+        projectForm.image ||
+        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2340&auto=format&fit=crop",
       alt: projectForm.title,
       kpis: projectForm.kpis.split(",").map((k) => k.trim()).filter(Boolean),
       tags: projectForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
@@ -165,10 +450,10 @@ const AdminDashboard = ({ darkMode }) => {
 
     if (newProjectMode) {
       setProjects([formatted, ...projects]);
-      showToast("✨ New project added! Counter updated automatically.");
+      showToast("✨ New dashboard added! Number auto-updated to " + (projects.length + 1) + "+");
     } else {
       setProjects(projects.map((p) => (p.id === editingProject ? formatted : p)));
-      showToast("✅ Project updated successfully!");
+      showToast("✅ Dashboard updated successfully!");
     }
 
     setEditingProject(null);
@@ -176,9 +461,9 @@ const AdminDashboard = ({ darkMode }) => {
   };
 
   const handleDeleteProject = (id) => {
-    if (confirm("Are you sure you want to delete this project? Numbers will auto-recalculate.")) {
+    if (confirm("Are you sure you want to delete this dashboard? Numbers will auto-recalculate.")) {
       setProjects(projects.filter((p) => p.id !== id));
-      showToast("🗑️ Project deleted! Number of dashboards recalculated.");
+      showToast("🗑️ Dashboard removed! Number recalculated.");
     }
   };
 
@@ -228,7 +513,7 @@ const AdminDashboard = ({ darkMode }) => {
                 </span>
               </h2>
               <p className="text-xs text-gray-400">
-                Live Content Manager &amp; Automatic Number Synchronization
+                Live Content Manager, File Uploads &amp; Auto-Synchronized Counters
               </p>
             </div>
           </div>
@@ -241,7 +526,7 @@ const AdminDashboard = ({ darkMode }) => {
                 title="Logout"
               >
                 <LogOut size={14} />
-                <span className="hidden sm:inline">Logout</span>
+                <span className="hidden sm:inline">Logout ({currentAdminEmail === SHAHD_EMAIL ? "Shahd" : "Mohamed"})</span>
               </button>
             )}
             <button
@@ -271,67 +556,274 @@ const AdminDashboard = ({ darkMode }) => {
 
         {/* Content Body */}
         {!isAuthenticated ? (
-          /* LOGIN SCREEN */
+          /* LOGIN & AUTHENTICATION SCREENS */
           <div className="p-8 sm:p-12 flex flex-col items-center justify-center max-w-md mx-auto w-full my-auto text-center">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-rose-500/10 text-rose-500 border border-rose-500/20 mb-6 shadow-inner">
-              <Lock size={32} />
+              {authView === "login" ? <Lock size={32} /> : <Key size={32} />}
             </div>
-            <h3 className="text-2xl font-bold mb-2">Restricted Admin Access</h3>
-            <p className="text-xs sm:text-sm text-gray-400 mb-6">
-              Please authenticate with Shahd's authorized Gmail &amp; Password to edit portfolio data.
-            </p>
 
-            <form onSubmit={handleLogin} className="w-full space-y-4 text-left">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 text-rose-500">
-                  Gmail Address
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="shahdkamal@gmail.com"
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:border-rose-500 ${
-                    darkMode ? "bg-gray-800/80 border-gray-700 text-white" : "bg-white border-rose-200"
-                  }`}
-                />
-              </div>
+            {authView === "login" ? (
+              <>
+                <h3 className="text-2xl font-bold mb-1">Admin Access</h3>
+                <p className="text-xs sm:text-sm text-gray-400 mb-6">
+                  Log in with your authorized admin email.
+                </p>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 text-rose-500">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:border-rose-500 ${
-                    darkMode ? "bg-gray-800/80 border-gray-700 text-white" : "bg-white border-rose-200"
-                  }`}
-                />
-              </div>
+                <form onSubmit={handleLogin} className="w-full space-y-4 text-left">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 text-rose-500">
+                      Gmail Address
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="kamalshahd574@gmail.com"
+                      value={loginEmail}
+                      onChange={(e) => {
+                        setLoginEmail(e.target.value);
+                        setLoginError("");
+                      }}
+                      className={`w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:border-rose-500 ${
+                        darkMode ? "bg-gray-800/80 border-gray-700 text-white" : "bg-white border-rose-200"
+                      }`}
+                    />
+                  </div>
 
-              {loginError && (
-                <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
-                  <AlertCircle size={16} className="shrink-0" />
-                  <span>{loginError}</span>
+                  {/* If Shahd is logging in for the first time, show friendly first-time password setup */}
+                  {loginEmail.trim().toLowerCase() === SHAHD_EMAIL && isShahdFirstTime ? (
+                    <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-left space-y-3">
+                      <p className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                        <Sparkles size={14} /> Welcome Shahd! Set your password:
+                      </p>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                          Choose Your Password
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          placeholder="At least 6 characters"
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          className={`w-full px-3 py-2 rounded-lg border text-sm outline-none ${
+                            darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-rose-300"
+                          }`}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                          Confirm Password
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          placeholder="Re-enter password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          className={`w-full px-3 py-2 rounded-lg border text-sm outline-none ${
+                            darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-rose-300"
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-rose-500">
+                          Password
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthView("forgot");
+                            setForgotEmail(loginEmail || SHAHD_EMAIL);
+                            setLoginError("");
+                            setLoginSuccess("");
+                          }}
+                          className="text-[11px] text-rose-400 hover:underline cursor-pointer"
+                        >
+                          Forgot password?
+                        </button>
+                      </div>
+                      <input
+                        type="password"
+                        required
+                        placeholder="••••••••"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        className={`w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:border-rose-500 ${
+                          darkMode ? "bg-gray-800/80 border-gray-700 text-white" : "bg-white border-rose-200"
+                        }`}
+                      />
+                    </div>
+                  )}
+
+                  {loginError && (
+                    <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                      <AlertCircle size={16} className="shrink-0" />
+                      <span>{loginError}</span>
+                    </div>
+                  )}
+
+                  {loginSuccess && (
+                    <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+                      <CheckCircle2 size={16} className="shrink-0" />
+                      <span>{loginSuccess}</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-linear-to-r from-rose-500 to-pink-500 hover:shadow-[0_0_25px_rgba(244,63,94,0.5)] transition duration-200 cursor-pointer"
+                  >
+                    {loginEmail.trim().toLowerCase() === SHAHD_EMAIL && isShahdFirstTime
+                      ? "Save Password & Enter Dashboard"
+                      : "Sign In to Admin Dashboard"}
+                  </button>
+
+                  <div className="text-[11px] text-gray-500 text-center pt-2 space-y-1">
+                    <p>
+                      Authorized Admins: <code className="text-rose-400">kamalshahd574@gmail.com</code> &amp; <code className="text-rose-400">mohamedfahmy1757@gmail.com</code>
+                    </p>
+                  </div>
+                </form>
+              </>
+            ) : (
+              /* FORGOT PASSWORD REQUEST & APPROVAL FLOW */
+              <div className="w-full text-left space-y-4">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold mb-1">Reset Password</h3>
+                  <p className="text-xs text-gray-400 mb-4">
+                    Security approval required: If one of you forgets their password, a request is sent to the other for approval.
+                  </p>
                 </div>
-              )}
 
-              <button
-                type="submit"
-                className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-linear-to-r from-rose-500 to-pink-500 hover:shadow-[0_0_25px_rgba(244,63,94,0.5)] transition duration-200 cursor-pointer"
-              >
-                Sign In to Admin Dashboard
-              </button>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 text-rose-500">
+                    Who needs a password reset?
+                  </label>
+                  <select
+                    value={forgotEmail}
+                    onChange={(e) => {
+                      setForgotEmail(e.target.value);
+                      setLoginError("");
+                      setLoginSuccess("");
+                    }}
+                    className={`w-full px-4 py-3 rounded-xl border text-sm outline-none ${
+                      darkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-rose-200"
+                    }`}
+                  >
+                    <option value={SHAHD_EMAIL}>Shahd Kamal (kamalshahd574@gmail.com)</option>
+                    <option value={MOHAMED_EMAIL}>Mohamed Fahmy (mohamedfahmy1757@gmail.com)</option>
+                  </select>
+                </div>
 
-              <p className="text-[11px] text-gray-500 text-center pt-2">
-                Hint: Authorized for Shahd Kamal (<code className="text-rose-400">shahdkamal@gmail.com</code> / <code className="text-rose-400">shahd2026</code>)
-              </p>
-            </form>
+                {/* Case 1: An approved reset exists -> Let them set a new password! */}
+                {activeApprovedRequest ? (
+                  <form onSubmit={handleApplyNewPassword} className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-3">
+                    <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+                      <ShieldCheck size={18} />
+                      <span>Request Approved! You may now set your new password:</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                        New Password
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        placeholder="At least 6 characters"
+                        value={newResetPassword}
+                        onChange={(e) => setNewResetPassword(e.target.value)}
+                        className={`w-full px-3 py-2 rounded-lg border text-sm outline-none ${
+                          darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-rose-300"
+                        }`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                        Confirm New Password
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        placeholder="Re-enter new password"
+                        value={confirmResetPassword}
+                        onChange={(e) => setConfirmResetPassword(e.target.value)}
+                        className={`w-full px-3 py-2 rounded-lg border text-sm outline-none ${
+                          darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-rose-300"
+                        }`}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-emerald-500 hover:bg-emerald-600 transition cursor-pointer"
+                    >
+                      Update Password &amp; Log In
+                    </button>
+                  </form>
+                ) : activePendingRequest ? (
+                  /* Case 2: Request is pending approval */
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-2">
+                    <p className="font-bold text-amber-400 flex items-center gap-1.5">
+                      <AlertCircle size={15} /> Request Pending Approval
+                    </p>
+                    <p className="text-gray-300 text-[11px] leading-relaxed">
+                      A reset request was sent to <strong>{activePendingRequest.targetName}</strong> ({activePendingRequest.targetEmail}). They must log in to the admin panel and click <strong>Approve</strong>. Once approved, refresh this page to set your new password.
+                    </p>
+                  </div>
+                ) : (
+                  /* Case 3: No request yet -> Send request */
+                  <form onSubmit={handleSendResetRequest} className="space-y-3">
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Clicking below will send a reset request to{" "}
+                      <strong className="text-rose-400">
+                        {forgotEmail === SHAHD_EMAIL ? "Mohamed Fahmy" : "Shahd Kamal"}
+                      </strong>
+                      . They must log in and approve it before your password can be changed.
+                    </p>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 rounded-xl font-bold text-xs text-white bg-linear-to-r from-rose-500 to-pink-500 hover:shadow-lg transition cursor-pointer"
+                    >
+                      Send Reset Request to {forgotEmail === SHAHD_EMAIL ? "Mohamed" : "Shahd"}
+                    </button>
+                  </form>
+                )}
+
+                {loginError && (
+                  <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                    <AlertCircle size={16} className="shrink-0" />
+                    <span>{loginError}</span>
+                  </div>
+                )}
+
+                {loginSuccess && (
+                  <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+                    <CheckCircle2 size={16} className="shrink-0" />
+                    <span>{loginSuccess}</span>
+                  </div>
+                )}
+
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthView("login");
+                      setLoginError("");
+                      setLoginSuccess("");
+                    }}
+                    className="text-xs text-gray-400 hover:text-white transition"
+                  >
+                    ← Back to Login
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           /* AUTHENTICATED DASHBOARD */
@@ -343,16 +835,23 @@ const AdminDashboard = ({ darkMode }) => {
               }`}
             >
               {[
-                { id: "hero", label: "Hero & Profile", icon: <User size={16} /> },
+                { id: "hero", label: "Hero & Photos", icon: <User size={16} /> },
                 { id: "about", label: "About Me", icon: <FileText size={16} /> },
+                { id: "contact", label: "Contact & Social", icon: <Mail size={16} /> },
                 {
                   id: "projects",
-                  label: `Projects (${projects.length})`,
+                  label: `Dashboards (${projects.length})`,
                   icon: <BarChart3 size={16} />,
                   badge: `${projects.length}+`,
                 },
                 { id: "experience", label: "Work Experience", icon: <Briefcase size={16} /> },
                 { id: "skills", label: "Skills & Tools", icon: <Wrench size={16} /> },
+                {
+                  id: "security",
+                  label: "Security & Approvals",
+                  icon: <ShieldCheck size={16} />,
+                  badge: pendingRequestsForMe.length > 0 ? `${pendingRequestsForMe.length} pending` : undefined,
+                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -372,7 +871,9 @@ const AdminDashboard = ({ darkMode }) => {
                   {tab.badge && (
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                        activeTab === tab.id
+                        tab.badge.includes("pending")
+                          ? "bg-amber-500 text-white animate-pulse"
+                          : activeTab === tab.id
                           ? "bg-white/20 text-white"
                           : "bg-rose-500/15 text-rose-500"
                       }`}
@@ -390,7 +891,7 @@ const AdminDashboard = ({ darkMode }) => {
                 }`}
               >
                 <p className="font-bold text-rose-500 mb-1 flex items-center gap-1.5">
-                  <Sparkles size={14} /> Auto-Sync Active
+                  <Sparkles size={14} /> Auto-Calculated Stats
                 </p>
                 <div className="space-y-1 text-[11px] text-gray-400">
                   <div className="flex justify-between">
@@ -405,22 +906,171 @@ const AdminDashboard = ({ darkMode }) => {
                     <span>KPIs:</span>
                     <strong className="text-white font-bold">{stats.kpisCount}</strong>
                   </div>
+                  <div className="flex justify-between">
+                    <span>Skills:</span>
+                    <strong className="text-white font-bold">{stats.totalSkillsCount}</strong>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Main Panel Content */}
             <div className="flex-1 p-6 sm:p-8 overflow-y-auto space-y-6">
-              {/* TAB 1: HERO & PROFILE */}
+              {/* Approval notification alert inside dashboard if someone requested a reset */}
+              {pendingRequestsForMe.length > 0 && (
+                <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-amber-500 text-black font-bold shrink-0">
+                      <Key size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-amber-300">
+                        Password Reset Approval Requested!
+                      </p>
+                      <p className="text-[11px] text-gray-300">
+                        {pendingRequestsForMe[0].requesterName} ({pendingRequestsForMe[0].requesterEmail}) has requested permission to reset their password.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                    <button
+                      onClick={() => handleApproveReset(pendingRequestsForMe[0].id)}
+                      className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white transition flex items-center gap-1"
+                    >
+                      <Check size={14} /> Approve
+                    </button>
+                    <button
+                      onClick={() => handleRejectReset(pendingRequestsForMe[0].id)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 transition"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 1: HERO, PROFILE & FILE UPLOADS */}
               {activeTab === "hero" && (
-                <div className="space-y-5">
+                <div className="space-y-6">
                   <div className="border-b pb-3 border-gray-700/30">
-                    <h3 className="text-lg font-bold">Hero Section &amp; Taglines</h3>
+                    <h3 className="text-lg font-bold">Hero Section, Photos &amp; CV Upload</h3>
                     <p className="text-xs text-gray-400">
-                      Edit the words that appear directly under her name, CV links, and contact handles.
+                      Upload your photo and CV directly from your phone or PC, and customize the words that appear directly under your name.
                     </p>
                   </div>
 
+                  {/* Photo & CV File Upload Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {/* Hero Photo Upload */}
+                    <div
+                      className={`p-4 rounded-2xl border space-y-3 ${
+                        darkMode ? "bg-gray-800/40 border-gray-700" : "bg-rose-50/50 border-rose-200"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1.5">
+                          <ImageIcon size={15} /> Hero Section Photo
+                        </label>
+                        {profile.avatar !== defaultShahdPhoto && (
+                          <button
+                            onClick={() => {
+                              setProfile({ ...profile, avatar: defaultShahdPhoto });
+                              showToast("Reset photo to default!");
+                            }}
+                            className="text-[11px] text-gray-400 hover:text-rose-400 underline"
+                          >
+                            Reset to default
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <div className="w-20 h-24 rounded-2xl overflow-hidden border-2 border-rose-400/30 shadow-md shrink-0 bg-black/30">
+                          <img
+                            src={profile.avatar || defaultShahdPhoto}
+                            alt="Preview"
+                            className="w-full h-full object-cover object-top"
+                          />
+                        </div>
+
+                        <div className="space-y-2 flex-1">
+                          <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-linear-to-r from-rose-500 to-pink-500 text-white shadow-md hover:opacity-90 cursor-pointer transition">
+                            <Upload size={14} />
+                            <span>Upload from Phone / PC</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleAvatarFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+                          <p className="text-[11px] text-gray-400">
+                            Supports JPG, PNG, WebP. Automatically optimized for fast mobile rendering.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CV Document Upload */}
+                    <div
+                      className={`p-4 rounded-2xl border space-y-3 ${
+                        darkMode ? "bg-gray-800/40 border-gray-700" : "bg-rose-50/50 border-rose-200"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1.5">
+                          <FileText size={15} /> CV Document (PDF / File)
+                        </label>
+                        {profile.cvFile && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
+                            File Attached
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-linear-to-r from-rose-500 to-pink-500 text-white shadow-md hover:opacity-90 cursor-pointer transition">
+                            <Upload size={14} />
+                            <span>Upload CV from Phone / PC</span>
+                            <input
+                              type="file"
+                              accept=".pdf,.doc,.docx"
+                              onChange={handleCvFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+
+                          {profile.cvFile && (
+                            <a
+                              href={profile.cvFile}
+                              download={profile.cvUrl || "Shahd_Kamal_CV.pdf"}
+                              className="px-3 py-2 rounded-xl text-xs font-semibold border border-rose-400/40 hover:bg-rose-500/10 transition"
+                            >
+                              Test Download
+                            </a>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] text-gray-400 mb-1">
+                            Or enter an external CV Link / File Name:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. /Shahd_Kamal_CV.pdf or Google Drive link"
+                            value={profile.cvUrl}
+                            onChange={(e) => setProfile({ ...profile, cvUrl: e.target.value })}
+                            className={`w-full px-3 py-1.5 rounded-xl border text-xs outline-none focus:border-rose-500 ${
+                              darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-rose-200"
+                            }`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Words Under Name & Taglines */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">
@@ -438,7 +1088,7 @@ const AdminDashboard = ({ darkMode }) => {
 
                     <div>
                       <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">
-                        Primary Title ("Under Her Name")
+                        Words Directly Under Her Name (Primary Title)
                       </label>
                       <input
                         type="text"
@@ -464,48 +1114,69 @@ const AdminDashboard = ({ darkMode }) => {
                       }`}
                     />
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <div>
-                      <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">
-                        Download CV Link / URL
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="https://... or /Mohamed_Fahmy_CV.pdf"
-                        value={profile.cvUrl}
-                        onChange={(e) => setProfile({ ...profile, cvUrl: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-rose-200"
-                        }`}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">
-                        LinkedIn Profile URL
-                      </label>
-                      <input
-                        type="text"
-                        value={profile.linkedinUrl}
-                        onChange={(e) => setProfile({ ...profile, linkedinUrl: e.target.value })}
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-rose-200"
-                        }`}
-                      />
-                    </div>
-                  </div>
                 </div>
               )}
 
-              {/* TAB 2: ABOUT ME */}
+              {/* TAB 2: ABOUT ME & ABOUT PHOTO */}
               {activeTab === "about" && (
                 <div className="space-y-5">
                   <div className="border-b pb-3 border-gray-700/30">
-                    <h3 className="text-lg font-bold">About Me Section</h3>
+                    <h3 className="text-lg font-bold">About Me Section &amp; Illustration</h3>
                     <p className="text-xs text-gray-400">
-                      Customize headline, biography paragraphs, disciplines, and milestone numbers.
+                      Upload a photo for the About section or customize text, disciplines, and milestones.
                     </p>
+                  </div>
+
+                  {/* About Photo Upload */}
+                  <div
+                    className={`p-4 rounded-2xl border space-y-3 ${
+                      darkMode ? "bg-gray-800/40 border-gray-700" : "bg-rose-50/50 border-rose-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <ImageIcon size={15} /> About Section Photo
+                      </label>
+                      {profile.aboutImage && (
+                        <button
+                          onClick={() => {
+                            setProfile({ ...profile, aboutImage: "" });
+                            showToast("Reset to use primary photo!");
+                          }}
+                          className="text-[11px] text-gray-400 hover:text-rose-400 underline"
+                        >
+                          Use Hero Photo
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-24 rounded-2xl overflow-hidden border-2 border-rose-400/30 shadow-md shrink-0 bg-black/30">
+                        <img
+                          src={profile.aboutImage || profile.avatar || defaultShahdPhoto}
+                          alt="About Preview"
+                          className="w-full h-full object-cover object-top"
+                        />
+                      </div>
+
+                      <div className="space-y-2 flex-1">
+                        <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-linear-to-r from-rose-500 to-pink-500 text-white shadow-md hover:opacity-90 cursor-pointer transition">
+                          <Upload size={14} />
+                          <span>Upload About Photo (Phone / PC)</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleAboutImageUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <p className="text-[11px] text-gray-400">
+                          {profile.aboutImage
+                            ? "Custom image active for About section."
+                            : "Currently mirroring Hero photo."}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   <div>
@@ -624,6 +1295,100 @@ const AdminDashboard = ({ darkMode }) => {
                 </div>
               )}
 
+              {/* TAB: CONTACT & PHOTO */}
+              {activeTab === "contact" && (
+                <div className="space-y-5">
+                  <div className="border-b pb-3 border-gray-700/30">
+                    <h3 className="text-lg font-bold">Contact Section &amp; Handles</h3>
+                    <p className="text-xs text-gray-400">
+                      Upload a photo specifically for the Contact section and manage your direct handles.
+                    </p>
+                  </div>
+
+                  {/* Contact Photo Upload */}
+                  <div
+                    className={`p-4 rounded-2xl border space-y-3 ${
+                      darkMode ? "bg-gray-800/40 border-gray-700" : "bg-rose-50/50 border-rose-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <ImageIcon size={15} /> Contact Section Photo
+                      </label>
+                      {profile.contactImage && (
+                        <button
+                          onClick={() => {
+                            setProfile({ ...profile, contactImage: "" });
+                            showToast("Reset to use primary photo!");
+                          }}
+                          className="text-[11px] text-gray-400 hover:text-rose-400 underline"
+                        >
+                          Use Hero Photo
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-24 rounded-2xl overflow-hidden border-2 border-rose-400/30 shadow-md shrink-0 bg-black/30">
+                        <img
+                          src={profile.contactImage || profile.avatar || defaultShahdPhoto}
+                          alt="Contact Preview"
+                          className="w-full h-full object-cover object-top"
+                        />
+                      </div>
+
+                      <div className="space-y-2 flex-1">
+                        <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-linear-to-r from-rose-500 to-pink-500 text-white shadow-md hover:opacity-90 cursor-pointer transition">
+                          <Upload size={14} />
+                          <span>Upload Contact Photo (Phone / PC)</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleContactImageUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <p className="text-[11px] text-gray-400">
+                          {profile.contactImage
+                            ? "Custom image active for Contact section."
+                            : "Currently mirroring Hero photo."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">
+                        LinkedIn Profile URL
+                      </label>
+                      <input
+                        type="text"
+                        value={profile.linkedinUrl}
+                        onChange={(e) => setProfile({ ...profile, linkedinUrl: e.target.value })}
+                        className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-rose-200"
+                        }`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">
+                        WhatsApp Link
+                      </label>
+                      <input
+                        type="text"
+                        value={profile.whatsappUrl}
+                        onChange={(e) => setProfile({ ...profile, whatsappUrl: e.target.value })}
+                        className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-rose-200"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* TAB 3: PROJECTS & DASHBOARDS */}
               {activeTab === "projects" && (
                 <div className="space-y-6">
@@ -699,8 +1464,9 @@ const AdminDashboard = ({ darkMode }) => {
                             }`}
                           />
                         </div>
+
                         <div>
-                          <label className="block text-xs font-bold mb-1">Category</label>
+                          <label className="block text-xs font-bold mb-1">Category Domain</label>
                           <select
                             value={projectForm.category}
                             onChange={(e) => setProjectForm({ ...projectForm, category: e.target.value })}
@@ -715,36 +1481,25 @@ const AdminDashboard = ({ darkMode }) => {
                         </div>
                       </div>
 
+                      {/* Image Upload for Dashboard */}
                       <div>
-                        <label className="block text-xs font-bold mb-1">Short Summary (Card Preview)</label>
-                        <textarea
-                          rows={2}
-                          value={projectForm.des}
-                          onChange={(e) => setProjectForm({ ...projectForm, des: e.target.value })}
-                          className={`w-full p-2.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                            darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                          }`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold mb-1">Detailed Description (Modal Inspector)</label>
-                        <textarea
-                          rows={3}
-                          value={projectForm.longDes}
-                          onChange={(e) => setProjectForm({ ...projectForm, longDes: e.target.value })}
-                          className={`w-full p-2.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                            darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                          }`}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-bold mb-1">Dashboard Image URL / Path</label>
+                        <label className="block text-xs font-bold mb-1 text-rose-500">
+                          Dashboard Screenshot (Upload or Link)
+                        </label>
+                        <div className="flex flex-col sm:flex-row items-center gap-3">
+                          <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-linear-to-r from-rose-500 to-pink-500 text-white shadow-md hover:opacity-90 cursor-pointer transition shrink-0">
+                            <Upload size={14} />
+                            <span>Upload Screenshot</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleProjectImageUpload}
+                              className="hidden"
+                            />
+                          </label>
                           <input
                             type="text"
-                            placeholder="https://... or image asset"
+                            placeholder="Or enter Image URL"
                             value={projectForm.image}
                             onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
                             className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
@@ -752,26 +1507,38 @@ const AdminDashboard = ({ darkMode }) => {
                             }`}
                           />
                         </div>
-                        <div>
-                          <label className="block text-xs font-bold mb-1">Live Power BI / Report URL</label>
-                          <input
-                            type="text"
-                            placeholder="https://app.powerbi.com/..."
-                            value={projectForm.liveUrl}
-                            onChange={(e) => setProjectForm({ ...projectForm, liveUrl: e.target.value })}
-                            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                              darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                            }`}
-                          />
-                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Short Description</label>
+                        <input
+                          type="text"
+                          value={projectForm.des}
+                          onChange={(e) => setProjectForm({ ...projectForm, des: e.target.value })}
+                          className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                            darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Detailed Case Study</label>
+                        <textarea
+                          rows={3}
+                          value={projectForm.longDes}
+                          onChange={(e) => setProjectForm({ ...projectForm, longDes: e.target.value })}
+                          className={`w-full p-3 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                            darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                          }`}
+                        />
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-bold mb-1">KPIs (Comma separated)</label>
+                          <label className="block text-xs font-bold mb-1">KPIs (Comma Separated)</label>
                           <input
                             type="text"
-                            placeholder="e.g. ROE, Current Ratio, Net Margin"
+                            placeholder="Revenue, ROI, Churn"
                             value={projectForm.kpis}
                             onChange={(e) => setProjectForm({ ...projectForm, kpis: e.target.value })}
                             className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
@@ -779,11 +1546,12 @@ const AdminDashboard = ({ darkMode }) => {
                             }`}
                           />
                         </div>
+
                         <div>
-                          <label className="block text-xs font-bold mb-1">Technologies / Tags (Comma separated)</label>
+                          <label className="block text-xs font-bold mb-1">Tags (Comma Separated)</label>
                           <input
                             type="text"
-                            placeholder="Power BI, DAX, Financial Modeling"
+                            placeholder="Power BI, DAX, Excel"
                             value={projectForm.tags}
                             onChange={(e) => setProjectForm({ ...projectForm, tags: e.target.value })}
                             className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
@@ -799,55 +1567,55 @@ const AdminDashboard = ({ darkMode }) => {
                             setNewProjectMode(false);
                             setEditingProject(null);
                           }}
-                          className="px-4 py-2 rounded-xl text-xs font-semibold hover:bg-gray-700/50"
+                          className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleSaveProject}
-                          className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 transition"
+                          className="px-6 py-2 rounded-xl text-xs font-bold text-white bg-linear-to-r from-rose-500 to-pink-500 hover:shadow-lg transition cursor-pointer"
                         >
-                          {newProjectMode ? "Add Dashboard" : "Update Dashboard"}
+                          {newProjectMode ? "Add to Portfolio" : "Save Changes"}
                         </button>
                       </div>
                     </div>
                   )}
 
-                  {/* Project Cards List */}
-                  <div className="space-y-3">
-                    {projects.map((proj, idx) => (
+                  {/* Projects List */}
+                  <div className="grid grid-cols-1 gap-3">
+                    {projects.map((proj) => (
                       <div
                         key={proj.id}
-                        className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-rose-500/40 ${
-                          darkMode ? "bg-gray-800/40 border-gray-700/70" : "bg-white border-rose-100"
+                        className={`p-4 rounded-2xl border flex items-center justify-between gap-4 transition ${
+                          darkMode ? "bg-gray-800/40 border-gray-700 hover:border-gray-600" : "bg-white border-rose-100 hover:border-rose-300"
                         }`}
                       >
-                        <div className="flex items-start gap-3">
-                          <span className="w-6 h-6 rounded-lg bg-rose-500/10 text-rose-500 text-xs font-bold flex items-center justify-center shrink-0">
-                            {idx + 1}
-                          </span>
-                          <div>
-                            <h4 className="font-bold text-sm leading-snug">{proj.title}</h4>
-                            <p className="text-xs text-rose-400 font-semibold mt-0.5">
-                              {proj.categoryLabel || proj.category} • {proj.kpis?.length || 0} KPIs • {proj.tags?.join(", ")}
-                            </p>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img
+                            src={proj.image}
+                            alt=""
+                            className="w-16 h-12 rounded-lg object-cover shrink-0 border border-rose-400/20"
+                          />
+                          <div className="min-w-0">
+                            <h4 className="font-bold text-sm truncate">{proj.title}</h4>
+                            <p className="text-xs text-rose-500 font-semibold">{proj.categoryLabel}</p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 self-end sm:self-center">
+                        <div className="flex items-center gap-2 shrink-0">
                           <button
                             onClick={() => handleStartEditProject(proj)}
-                            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-rose-500/20 transition"
+                            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700/50 transition"
                             title="Edit"
                           >
-                            <Edit3 size={15} />
+                            <Edit3 size={16} />
                           </button>
                           <button
                             onClick={() => handleDeleteProject(proj.id)}
-                            className="p-2 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 transition"
+                            className="p-2 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition"
                             title="Delete"
                           >
-                            <Trash2 size={15} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
@@ -860,109 +1628,116 @@ const AdminDashboard = ({ darkMode }) => {
               {activeTab === "experience" && (
                 <div className="space-y-6">
                   <div className="border-b pb-3 border-gray-700/30">
-                    <h3 className="text-lg font-bold">Work Experience &amp; Competitions</h3>
+                    <h3 className="text-lg font-bold">Work Experience &amp; Career Milestones</h3>
                     <p className="text-xs text-gray-400">
-                      Edit CFA Challenge achievements, EELU training session details, and bullet milestones.
+                      Edit your roles, period, organization, and bullet points.
                     </p>
                   </div>
 
-                  {experiences.map((exp, idx) => (
-                    <div
-                      key={exp.id || idx}
-                      className={`p-5 rounded-2xl border space-y-4 ${
-                        darkMode ? "bg-gray-800/40 border-gray-700" : "bg-white border-rose-100"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between border-b pb-2 border-gray-700/30">
-                        <span className="text-xs font-extrabold text-rose-500 uppercase tracking-wider">
-                          Experience #{idx + 1} ({exp.number})
-                        </span>
-                        <span className="text-xs text-gray-400">{exp.period}</span>
-                      </div>
+                  <div className="space-y-4">
+                    {experiences.map((exp, expIdx) => (
+                      <div
+                        key={exp.id || expIdx}
+                        className={`p-5 rounded-2xl border space-y-3 ${
+                          darkMode ? "bg-gray-800/40 border-gray-700" : "bg-white border-rose-100"
+                        }`}
+                      >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-bold text-rose-500 uppercase">
+                              Role Title
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.role}
+                              onChange={(e) => {
+                                const copy = [...experiences];
+                                copy[expIdx].role = e.target.value;
+                                setExperiences(copy);
+                              }}
+                              className={`w-full px-3 py-1.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                                darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                              }`}
+                            />
+                          </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-bold mb-1">Title</label>
-                          <input
-                            type="text"
-                            value={exp.title}
-                            onChange={(e) => {
-                              const updated = [...experiences];
-                              updated[idx].title = e.target.value;
-                              setExperiences(updated);
-                            }}
-                            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                              darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                            }`}
-                          />
+                          <div>
+                            <label className="block text-[11px] font-bold text-rose-500 uppercase">
+                              Organization
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.organization}
+                              onChange={(e) => {
+                                const copy = [...experiences];
+                                copy[expIdx].organization = e.target.value;
+                                setExperiences(copy);
+                              }}
+                              className={`w-full px-3 py-1.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                                darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                              }`}
+                            />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-xs font-bold mb-1">Role</label>
-                          <input
-                            type="text"
-                            value={exp.role}
-                            onChange={(e) => {
-                              const updated = [...experiences];
-                              updated[idx].role = e.target.value;
-                              setExperiences(updated);
-                            }}
-                            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                              darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                            }`}
-                          />
-                        </div>
-                      </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-bold mb-1">Period</label>
-                          <input
-                            type="text"
-                            value={exp.period}
-                            onChange={(e) => {
-                              const updated = [...experiences];
-                              updated[idx].period = e.target.value;
-                              setExperiences(updated);
-                            }}
-                            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                              darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                            }`}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold mb-1">Badge Status</label>
-                          <input
-                            type="text"
-                            value={exp.badge}
-                            onChange={(e) => {
-                              const updated = [...experiences];
-                              updated[idx].badge = e.target.value;
-                              setExperiences(updated);
-                            }}
-                            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                              darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                            }`}
-                          />
-                        </div>
-                      </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-bold text-rose-500 uppercase">
+                              Period
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.period}
+                              onChange={(e) => {
+                                const copy = [...experiences];
+                                copy[expIdx].period = e.target.value;
+                                setExperiences(copy);
+                              }}
+                              className={`w-full px-3 py-1.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                                darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                              }`}
+                            />
+                          </div>
 
-                      <div>
-                        <label className="block text-xs font-bold mb-1">Bullet Achievements (One per line)</label>
-                        <textarea
-                          rows={4}
-                          value={exp.bullets?.join("\n")}
-                          onChange={(e) => {
-                            const updated = [...experiences];
-                            updated[idx].bullets = e.target.value.split("\n").filter(Boolean);
-                            setExperiences(updated);
-                          }}
-                          className={`w-full p-2.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                            darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
-                          }`}
-                        />
+                          <div>
+                            <label className="block text-[11px] font-bold text-rose-500 uppercase">
+                              Badge
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.badge}
+                              onChange={(e) => {
+                                const copy = [...experiences];
+                                copy[expIdx].badge = e.target.value;
+                                setExperiences(copy);
+                              }}
+                              className={`w-full px-3 py-1.5 rounded-xl border text-sm outline-none focus:border-rose-500 ${
+                                darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                              }`}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-rose-500 uppercase mb-1">
+                            Bullet Points (One per line)
+                          </label>
+                          <textarea
+                            rows={4}
+                            value={Array.isArray(exp.bullets) ? exp.bullets.join("\n") : ""}
+                            onChange={(e) => {
+                              const copy = [...experiences];
+                              copy[expIdx].bullets = e.target.value.split("\n").filter(Boolean);
+                              setExperiences(copy);
+                            }}
+                            className={`w-full p-2.5 rounded-xl border text-xs outline-none focus:border-rose-500 ${
+                              darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                            }`}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -970,28 +1745,34 @@ const AdminDashboard = ({ darkMode }) => {
               {activeTab === "skills" && (
                 <div className="space-y-6">
                   <div className="border-b pb-3 border-gray-700/30">
-                    <h3 className="text-lg font-bold">Skills, Tools &amp; Competencies</h3>
+                    <h3 className="text-lg font-bold">Skills &amp; Analytical Tools</h3>
                     <p className="text-xs text-gray-400">
-                      Manage technical data analysis skills, marketing tools, and business competencies.
+                      Add, remove, or customize technical skills. Counter updates automatically!
                     </p>
                   </div>
 
-                  {/* Add skill row */}
-                  <div className="flex gap-2 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+                  {/* Add New Skill Input */}
+                  <div className="flex flex-wrap gap-2 items-center">
                     <input
                       type="text"
-                      placeholder="Type a new skill or tool name..."
+                      placeholder="Add a new skill (e.g. SQL, Python, Tableau)"
                       value={newSkillText}
                       onChange={(e) => setNewSkillText(e.target.value)}
-                      className={`flex-1 px-4 py-2 rounded-xl border text-sm outline-none focus:border-rose-500 ${
-                        darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-rose-200"
+                      className={`flex-1 min-w-[200px] px-4 py-2.5 rounded-xl border text-xs outline-none focus:border-rose-500 ${
+                        darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-rose-200"
                       }`}
                     />
                     <button
                       onClick={() => handleAddSkill("dataAnalysisSkills")}
-                      className="px-3 py-2 rounded-xl text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 transition"
+                      className="px-3 py-2 rounded-xl text-xs font-bold text-white bg-linear-to-r from-rose-500 to-pink-500 hover:opacity-90 transition"
                     >
                       + Data Skill
+                    </button>
+                    <button
+                      onClick={() => handleAddSkill("dataAnalysisTools")}
+                      className="px-3 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition"
+                    >
+                      + Data Tool
                     </button>
                     <button
                       onClick={() => handleAddSkill("digitalMarketingSkills")}
@@ -1046,6 +1827,84 @@ const AdminDashboard = ({ darkMode }) => {
                   ))}
                 </div>
               )}
+
+              {/* TAB 6: SECURITY & RESET APPROVALS */}
+              {activeTab === "security" && (
+                <div className="space-y-6">
+                  <div className="border-b pb-3 border-gray-700/30">
+                    <h3 className="text-lg font-bold">Admin Password Security &amp; Reset Approvals</h3>
+                    <p className="text-xs text-gray-400">
+                      Manage passwords and approve password-reset requests sent by the other admin.
+                    </p>
+                  </div>
+
+                  {/* Pending Requests for approval */}
+                  <div
+                    className={`p-5 rounded-2xl border space-y-4 ${
+                      darkMode ? "bg-gray-800/40 border-gray-700" : "bg-white border-rose-100"
+                    }`}
+                  >
+                    <h4 className="text-sm font-bold text-rose-500 flex items-center gap-2">
+                      <Key size={16} /> Pending Password Reset Requests
+                    </h4>
+
+                    {pendingRequestsForMe.length === 0 ? (
+                      <p className="text-xs text-gray-400">
+                        No pending requests. If the other admin forgets their password and requests a reset, their request will appear here for your approval.
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        {pendingRequestsForMe.map((req) => (
+                          <div
+                            key={req.id}
+                            className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                          >
+                            <div>
+                              <p className="text-xs font-bold text-amber-300">
+                                {req.requesterName} ({req.requesterEmail})
+                              </p>
+                              <p className="text-[11px] text-gray-400">
+                                Requested at: {new Date(req.createdAt).toLocaleString()}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleApproveReset(req.id)}
+                                className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white transition flex items-center gap-1 cursor-pointer"
+                              >
+                                <Check size={14} /> Approve Request
+                              </button>
+                              <button
+                                onClick={() => handleRejectReset(req.id)}
+                                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-700 hover:bg-gray-600 text-gray-300 transition cursor-pointer"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Active Admin Info */}
+                  <div
+                    className={`p-5 rounded-2xl border space-y-2 text-xs ${
+                      darkMode ? "bg-gray-800/40 border-gray-700" : "bg-white border-rose-100"
+                    }`}
+                  >
+                    <h4 className="font-bold text-rose-500 text-sm flex items-center gap-2">
+                      <ShieldCheck size={16} /> Currently Logged In As
+                    </h4>
+                    <p className="text-gray-300">
+                      <strong>Admin Email:</strong> {currentAdminEmail || "Authorized Admin"}
+                    </p>
+                    <p className="text-gray-400 text-[11px]">
+                      Shahd and Mohamed have distinct credentials. If either forgets their password, the other must accept the request before the password can be reset.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1065,7 +1924,7 @@ const AdminDashboard = ({ darkMode }) => {
                     showToast("🔄 Reset to original defaults!");
                   }
                 }}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-rose-500/10 transition"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-rose-500/10 transition cursor-pointer"
               >
                 <RotateCcw size={14} />
                 <span>Reset to Defaults</span>
@@ -1075,7 +1934,7 @@ const AdminDashboard = ({ darkMode }) => {
             <div className="flex items-center gap-3">
               <button
                 onClick={handleClose}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-gray-700 hover:bg-gray-800 transition"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-gray-700 hover:bg-gray-800 transition cursor-pointer"
               >
                 <ExternalLink size={14} />
                 <span>View Live Site</span>

@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, TrendingUp, GraduationCap, Award, CheckCircle2, Calendar, Building2 } from "lucide-react";
-import { client } from "../sanity/client";
-import { EXPERIENCES_QUERY } from "../sanity/queries";
 import { usePortfolio } from "../context/PortfolioContext";
 
 const Experience = ({ darkMode }) => {

@@ -52,16 +52,23 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
   };
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 220;
-      for (let i = navItems.length - 1; i >= 0; i--) {
-        const item = navItems[i];
-        const targetId = item.link.replace('#', '');
-        const element = document.getElementById(targetId);
-        if (element && element.offsetTop <= scrollPosition) {
-          setActiveSection(item.name.toLowerCase());
-          break;
-        }
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollPosition = window.scrollY + 220;
+          for (let i = navItems.length - 1; i >= 0; i--) {
+            const item = navItems[i];
+            const targetId = item.link.replace('#', '');
+            const element = document.getElementById(targetId);
+            if (element && element.offsetTop <= scrollPosition) {
+              setActiveSection(item.name.toLowerCase());
+              break;
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 

@@ -3,15 +3,16 @@ import orascomImg from "../assets/projects/orascom-dashboard.jpg";
 import magdiYacoubImg from "../assets/projects/magdi-yacoub-dashboard.jpg";
 import covidImg from "../assets/projects/covid19-dashboard.png";
 import shahdPhoto from "../assets/shahd_photo2.jpg";
-import { client } from "../sanity/client";
-import { PROJECTS_QUERY, EXPERIENCES_QUERY, SKILLS_QUERY, PROFILE_QUERY } from "../sanity/queries";
 
 const defaultProfile = {
   name: "Shahd Kamal",
   tagline: "Data Analyst & Digital Marketing Specialist.",
   subTagline: "Turning Data into Insights, and Creativity into Digital Growth.",
   cvUrl: "",
+  cvFile: "",
   avatar: shahdPhoto,
+  aboutImage: "",
+  contactImage: "",
   aboutHeadline: "Beyond Numbers. Beyond Creativity.",
   aboutIntro:
     "I'm Shahd Kamal, a results-oriented professional passionate about the intersection of business, data, and digital growth innovation.",

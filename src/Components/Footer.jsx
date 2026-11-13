@@ -70,21 +70,21 @@ const Footer = ({ darkMode }) => {
           <div className="text-center px-4">
             <p
               className="text-xs font-semibold uppercase tracking-widest mb-1"
-              style={{ color: darkMode ? "#6b7280" : "#9ca3af" }}
+              style={{ color: darkMode ? "#9ca3af" : "#4b5563" }}
             >
               © {currentYear} All rights reserved
             </p>
-            <p className="flex items-center justify-center gap-1.5 text-sm" style={{ color: darkMode ? "#9ca3af" : "#6b7280" }}>
+            <p className="flex items-center justify-center gap-1.5 text-sm" style={{ color: darkMode ? "#d1d5db" : "#374151" }}>
               Designed for
               <span className="text-rose-500 font-bold">Shahd Kamal</span>
               <FaHeart className="text-rose-500 inline" size={13} />
             </p>
             <p
               className="text-xs mt-1"
-              style={{ color: darkMode ? "#6b7280" : "#9ca3af" }}
+              style={{ color: darkMode ? "#9ca3af" : "#4b5563" }}
             >
               Built by{" "}
-              <span className="font-bold" style={{ color: darkMode ? "#d1d5db" : "#374151" }}>
+              <span className="font-bold" style={{ color: darkMode ? "#e5e7eb" : "#1f2937" }}>
                 Mohamed Fahmy
               </span>
             </p>
@@ -95,11 +95,11 @@ const Footer = ({ darkMode }) => {
             <div className="text-center lg:text-right">
               <h3
                 className="text-xl font-bold mb-1"
-                style={{ color: darkMode ? "#d1d5db" : "#374151" }}
+                style={{ color: darkMode ? "#f3f4f6" : "#111827" }}
               >
                 Mohamed Fahmy
               </h3>
-              <p className="text-xs" style={{ color: darkMode ? "#6b7280" : "#9ca3af" }}>
+              <p className="text-xs" style={{ color: darkMode ? "#9ca3af" : "#4b5563" }}>
                 Developer &amp; Designer
               </p>
             </div>
@@ -107,10 +107,10 @@ const Footer = ({ darkMode }) => {
             {/* Mohamed's social icons */}
             <div className="flex gap-3">
               <a
-                href="https://www.instagram.com/moo__fahmy?igsh=MXI2Z2xkdXV2d2Zpcg=="
+                href="https://www.instagram.com/moo__fahmy?igsh=MXI2Z2xkdXV2d2Zpcg%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Mohamed Instagram"
+                aria-label="Mohamed Fahmy Instagram"
                 className={`${iconClass} ${bgClass}`}
                 title="Mohamed Fahmy — Instagram"
               >
@@ -120,7 +120,7 @@ const Footer = ({ darkMode }) => {
                 href="https://api.whatsapp.com/send/?phone=201103149905&text&type=phone_number&app_absent=0"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Mohamed WhatsApp"
+                aria-label="Mohamed Fahmy WhatsApp"
                 className={`${iconClass} ${bgClass}`}
                 title="Mohamed Fahmy — WhatsApp"
               >
@@ -133,15 +133,12 @@ const Footer = ({ darkMode }) => {
 
         {/* Bottom separator + admin hint */}
         <div
-          className="mt-6 pt-4 border-t text-center text-[11px]"
-          style={{ borderColor: darkMode ? "#1f2937" : "#ffe4e6", color: darkMode ? "#374151" : "#d1d5db" }}
+          className="mt-6 pt-4 border-t text-center text-xs"
+          style={{ borderColor: darkMode ? "#1f2937" : "#ffe4e6", color: darkMode ? "#9ca3af" : "#6b7280" }}
         >
-          <span>Portfolio CMS powered by </span>
-          <span className="font-bold text-rose-500/70">Sanity.io</span>
-          <span className="mx-2">·</span>
           <a
             href="#admin"
-            className="hover:text-rose-500 transition-colors duration-200"
+            className="hover:text-rose-500 font-medium transition-colors duration-200"
             title="Admin Dashboard"
           >
             Admin

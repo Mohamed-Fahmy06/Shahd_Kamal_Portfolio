@@ -2,8 +2,10 @@ import { useState } from "react";
 import shahdPhoto from "../assets/shahd_photo.jpg";
 import { Mail, Phone, MapPin, Send, Sparkles } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa6";
+import { usePortfolio } from "../context/PortfolioContext";
 
 const Contact = ({ darkMode }) => {
+  const { profile } = usePortfolio();
   const [result, setResult] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -92,8 +94,11 @@ const Contact = ({ darkMode }) => {
 
               <div className="relative rounded-3xl overflow-hidden border-2 border-rose-400/30 shadow-2xl backdrop-blur-sm">
                 <img
-                  src={shahdPhoto}
-                  alt="Shahd Kamal"
+                  src={profile.contactImage || profile.avatar || shahdPhoto}
+                  alt={profile.name || "Shahd Kamal"}
+                  width="384"
+                  height="480"
+                  loading="lazy"
                   className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500"
                 />
 
@@ -127,9 +132,10 @@ const Contact = ({ darkMode }) => {
             {/* Quick Contact Badges */}
             <div className="w-full max-w-sm space-y-2.5">
               <a
-                href="https://www.linkedin.com/in/shahd-kamal-30a99436b"
+                href={profile.linkedinUrl || "https://www.linkedin.com/in/shahd-kamal-30a99436b"}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Shahd LinkedIn"
                 className="flex items-center gap-3 p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all hover:scale-102 shadow-sm"
                 style={{
                   background: darkMode ? "rgba(31, 41, 55, 0.7)" : "#ffffff",
@@ -145,15 +151,16 @@ const Contact = ({ darkMode }) => {
                     LinkedIn
                   </p>
                   <p className="truncate">
-                    linkedin.com/in/shahd-kamal-30a99436b
+                    {profile.linkedinUrl ? profile.linkedinUrl.replace(/^https?:\/\/(www\.)?/, "") : "linkedin.com/in/shahd-kamal-30a99436b"}
                   </p>
                 </div>
               </a>
 
               <a
-                href="https://wa.me/201156785653"
+                href={profile.whatsappUrl || "https://wa.me/201156785653"}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Shahd WhatsApp"
                 className="flex items-center gap-3 p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all hover:scale-102 shadow-sm"
                 style={{
                   background: darkMode ? "rgba(31, 41, 55, 0.7)" : "#ffffff",

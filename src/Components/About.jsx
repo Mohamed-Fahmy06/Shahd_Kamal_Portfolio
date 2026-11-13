@@ -30,8 +30,11 @@ const About = ({ darkMode }) => {
               data-aos-delay="700"
             />
             <img
-              src={profile.avatar || shahdPhoto}
+              src={profile.aboutImage || profile.avatar || shahdPhoto}
               alt={profile.name || "Shahd Kamal"}
+              width="384"
+              height="480"
+              loading="lazy"
               className="relative w-full h-auto object-cover rounded-3xl z-10 border-2 border-rose-400/30 shadow-2xl transition-all duration-500 hover:scale-102"
               data-aos="zoom-in"
               data-aos-delay="400"
@@ -56,13 +59,13 @@ const About = ({ darkMode }) => {
                 Get to know me
               </span>
             </div>
-            <h1
+            <h2
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 text-transparent bg-linear-to-r from-rose-500 via-pink-500 to-rose-400 bg-clip-text"
               data-aos="fade-up"
               data-aos-delay="400"
             >
               About Me
-            </h1>
+            </h2>
           </header>
 
           <div

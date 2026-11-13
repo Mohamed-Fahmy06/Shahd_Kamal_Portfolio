@@ -57,6 +57,7 @@ const Hero = ({ darkMode }) => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={index === 0 ? "Shahd WhatsApp" : "Shahd LinkedIn"}
                   className="transform hover:scale-125 transition-transform text-3xl"
                 >
                   <span
@@ -106,8 +107,8 @@ const Hero = ({ darkMode }) => {
                 data-aos-delay="700"
               >
                 <a
-                  href={profile.cvUrl || "#Contact"}
-                  download={Boolean(profile.cvUrl)}
+                  href={profile.cvFile || profile.cvUrl || "#Contact"}
+                  download={Boolean(profile.cvFile || profile.cvUrl)}
                   className="w-full sm:w-auto inline-flex items-center justify-center text-white
                                   bg-linear-to-r from-rose-500 to-pink-500
                                   border-0 py-3 px-6 sm:px-8 hover:shadow-[0_0_30px_rgba(244,63,94,0.5)]
@@ -147,6 +148,7 @@ const Hero = ({ darkMode }) => {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={index === 0 ? "Shahd WhatsApp" : "Shahd LinkedIn"}
                     className="transform hover:scale-125 transition-transform text-3xl p-1"
                   >
                     <span
@@ -178,6 +180,9 @@ const Hero = ({ darkMode }) => {
                 <img
                   src={profile.avatar || shahdPhoto}
                   alt={`${profile.name || "Shahd Kamal"} - Data Analyst & Digital Marketing Specialist`}
+                  width="370"
+                  height="480"
+                  fetchPriority="high"
                   className="w-full h-auto max-h-[430px] sm:max-h-[480px] lg:max-h-[520px] object-cover object-top transform group-hover:scale-103 transition-transform duration-500"
                 />
 

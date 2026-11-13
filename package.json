@@ -12,9 +12,6 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@portabletext/react": "^8.0.1",
-    "@sanity/client": "^8.16.0",
-    "@sanity/image-url": "^2.1.1",
     "@tailwindcss/vite": "^4.2.2",
     "aos": "^2.3.4",
     "framer-motion": "^12.38.0",
